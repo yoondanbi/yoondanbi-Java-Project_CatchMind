@@ -6,12 +6,15 @@ import manager.ProblemManager;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient extends JFrame {
+public class CatchMindClient4 extends JFrame {
     private static final String TAG = "GameStart :";
     private String IDString;
     public String[] problem = ProblemManager.getProblems();
@@ -52,7 +55,7 @@ public class CatchMindClient extends JFrame {
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
 
-    public CatchMindClient() {
+    public CatchMindClient4() {
         init();
         setting();
         batch();
@@ -517,6 +520,6 @@ public class CatchMindClient extends JFrame {
 
 
     public static void main(String[] args) {
-        new CatchMindClient();
+        new CatchMindClient4();
     }
 }

@@ -50,7 +50,8 @@ public class CatchMindServer {
         private int currentTurn = 1;
 
         private String clientID;
-        private String[] wordPool =  { "상어", "과제", "시험", "자바", "프로젝트" };
+        private String[] wordPool =  {"햄버거", "비행기", "나무", "해바라기", "자동차", "우산", "아이스크림", "호랑이", "강아지", "책" };
+
         private int score = 0;
 
         public ClientHandler(Socket clientSocket) {

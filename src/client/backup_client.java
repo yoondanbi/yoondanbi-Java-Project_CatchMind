@@ -1,6 +1,8 @@
 // 최종본
 package client;
 
+import manager.ProblemManager;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -9,14 +11,15 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
-public class CatchMindClient3 extends JFrame {
+public class backup_client extends JFrame {
     // 필수 태그
     private static final String TAG = "GameStart :";
     // 클라이언트가 입력한 아이디 값을 클라이언트도 알도록 전역 변수로 설정.
     private String IDString;
     // 제시어를 담아놓은 배열.
-    public String[] problem = { "상어", "과제", "시험", "자바", "프로젝트" };
-    // 턴이 변화할 때 마다 제시어를 순차적으로 선택하는 변수.
+
+    // ProblemManager에서 문제 배열 가져옴
+    public String[] problem = ProblemManager.getProblems();
     public int selectProblem = 0;
 
     private ImageIcon icGameStart;
@@ -158,7 +161,7 @@ public class CatchMindClient3 extends JFrame {
             super.paintComponent(g);
             g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
         }
-    };
+    }
 
     class MyPanel2 extends JPanel {
         private ImageIcon icon = new ImageIcon("img/drawColor.png");
@@ -168,7 +171,7 @@ public class CatchMindClient3 extends JFrame {
             super.paintComponent(g);
             g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
         }
-    };
+    }
 
     class MyButton extends JButton {
         private ImageIcon icon = new ImageIcon("img/drawEraser.png");
@@ -179,7 +182,7 @@ public class CatchMindClient3 extends JFrame {
             g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
             setBorderPainted(false); // 버튼 테두리 제거
         }
-    };
+    }
 
     class MyButton1 extends JButton {
         private ImageIcon icon = new ImageIcon("img/allDelete.png");
@@ -190,9 +193,9 @@ public class CatchMindClient3 extends JFrame {
             g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
             setBorderPainted(false); // 버튼 테두리 제거
         }
-    };
+    }
 
-    public CatchMindClient3() {
+    public backup_client() {
         init();
         setting();
         batch();
@@ -225,7 +228,6 @@ public class CatchMindClient3 extends JFrame {
 
         // 이미지
         icGameStart = new ImageIcon("img/gameStart.png"); // 게임시작 버튼 이미지
-
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
         iconRedPen = new ImageIcon("img/drawRedPen.png");
         iconOrangePen = new ImageIcon("img/drawOrangePen.png");
@@ -876,7 +878,7 @@ public class CatchMindClient3 extends JFrame {
                     } else if (parsReaderMsg[0].equals("IDLIST")) {
                         taUserList.append(parsReaderMsg[1] + "\n");
                     } else if (parsReaderMsg[0].equals("TURN")) {
-                        laQuiz.setText(problem[selectProblem]);
+                        laQuiz.setText(ProblemManager.getProblem(selectProblem));
                         laQuiz.setVisible(true);
                         btnSkip.setVisible(true);
                         drawPPAP = true;
@@ -894,7 +896,7 @@ public class CatchMindClient3 extends JFrame {
                         System.out.println(drawPPAP);
                     } else if (parsReaderMsg[0].equals("ANSWER")) {
                         selectProblem++;
-                        if (selectProblem >= problem.length) {
+                        if (selectProblem >= ProblemManager.getProblemCount()) {
                             selectProblem = 0;
                         }
                     } else if (parsReaderMsg[0].equals("END")) {
@@ -906,8 +908,7 @@ public class CatchMindClient3 extends JFrame {
                         btnReady.setVisible(true);
                         laQuiz.setVisible(false);
                         drawPPAP = true;
-                    }
-                    else {
+                    } else {
                         taChat.append("\n");
                     }
                     // 스크롤을 밑으로 고정.
@@ -972,6 +973,6 @@ public class CatchMindClient3 extends JFrame {
     }
 
     public static void main(String[] args) {
-        new CatchMindClient3();
+        new backup_client();
     }
 }
