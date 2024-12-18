@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 
-public class CatchMindClient extends JFrame {
+public class CatchMindClient extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
     public String[] problem = ProblemManager.getProblems();
@@ -26,7 +26,7 @@ public class CatchMindClient extends JFrame {
 
     private MyPanel plMain;
     private JButton btnStart;
-    private JPanel plId, plSub, plDrawRoom, plTopMpId, plTop, plMplId, plBottom, plEast, btnPanel;
+    private JPanel plId, plSub, plDrawRoom, plTopMpId, plTop, plMplId, plBottom, plEast, btnPanel, plEndGame;
     private MyPanel1 plDraw;
     private MyPanel2 plPalette;
     private MyButton btnEraser;
@@ -40,8 +40,8 @@ public class CatchMindClient extends JFrame {
     private TextField tfChat, tfIdInput;
     private JScrollPane scrChat;
 
-    private JLabel laQuizTitle, laQuiz, laId;
-    private JButton btnId, btnSkip, btnReady, btnExit;
+    private JLabel laQuizTitle, laQuiz, laId, lbScores;
+    private JButton btnId, btnSkip, btnReady, btnExit, btnEndGame, btnRestart;
 
     private Font ftSmall, ftMedium, ftLarge;
     //int x, y;
@@ -49,6 +49,7 @@ public class CatchMindClient extends JFrame {
     private BufferedImage imgBuff;
     private JLabel drawLabel;
     private Brush brush;
+    private ImageIcon endGameBg, endGameBtnIcon, restartBtnIcon;
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
 
@@ -76,6 +77,25 @@ public class CatchMindClient extends JFrame {
         plEast = new JPanel();
         btnPanel = new JPanel();
         plChat = new JPanel();  // plChat 객체 초기화 추가
+
+
+        // 종료 화면 배경 및 버튼 이미지 설정
+        endGameBg = new ImageIcon("img/endGame.png");
+        endGameBtnIcon = new ImageIcon("img/endGameBtn.png");
+        restartBtnIcon = new ImageIcon("img/restartBtn.png");
+        plEndGame = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(endGameBg.getImage(), 0, 0, getWidth(), getHeight(), null);
+            }
+        };
+        plEndGame.setLayout(null);
+        plEndGame.setBounds(0, 0, 800, 640);
+        plEndGame.setVisible(false);
+        lbScores = new JLabel();
+        btnEndGame = new JButton("게임 종료");
+        btnRestart = new JButton("재시작");
 
         icGameStart = new ImageIcon("img/gameStart.png");
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
@@ -237,12 +257,6 @@ public class CatchMindClient extends JFrame {
         btnPanel.setBackground(new Color(242, 242, 242, 255));
         btnPanel.setBounds(700, 530, 405, 130);
 
-        // plTop
-
-        // plMplId
-//		plDraw.setBackground(new Color(242, 242, 242, 255));
-//		plDraw.setBounds(0, 0, 750, 420); // plDraw 위치, 크기 조정 좌표는 plMplId 기준
-
         // plBottom
         plPalette.setLayout(null);
         plPalette.setBackground(new Color(242, 242, 242, 255));
@@ -310,6 +324,24 @@ public class CatchMindClient extends JFrame {
         drawLabel.setBackground(new Color(255, 255, 255, 0));
         brush.setBounds(0, 0, 750, 450);
 
+
+        // 종료 버튼
+        btnEndGame = new JButton(endGameBtnIcon);
+        btnEndGame.setBounds(300, 400, 200, 60);
+        btnEndGame.setBorderPainted(false);
+        btnEndGame.setContentAreaFilled(false);
+        btnEndGame.setFocusPainted(false);
+
+        // 재시작 버튼
+        btnRestart = new JButton(restartBtnIcon);
+        btnRestart.setBounds(300, 300, 200, 60);
+        btnRestart.setBorderPainted(false);
+        btnRestart.setContentAreaFilled(false);
+        btnRestart.setFocusPainted(false);
+
+        // 버튼 추가
+        plEndGame.add(btnRestart);
+        plEndGame.add(btnEndGame);
         setSize(800, 640);
     }
 
@@ -333,8 +365,6 @@ public class CatchMindClient extends JFrame {
         plDrawRoom.add(plBottom);
         plDrawRoom.add(plEast);
         plDrawRoom.add(btnPanel);
-
-//		plMplId.add(plDraw);
 
         plBottom.add(plPalette);
         plBottom.add(btnEraser);
@@ -365,6 +395,9 @@ public class CatchMindClient extends JFrame {
         plMplId.add(drawLabel);
         plMplId.add(brush);
 
+        // 게임 종료 화면을 반드시 마지막에 추가
+        plMain.add(plEndGame);
+        plMain.setComponentZOrder(plEndGame, 0); // 최상위로 설정
     }
 
     private void listener() {
@@ -393,7 +426,7 @@ public class CatchMindClient extends JFrame {
         drawLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (drawPPAP) {
+                if (ReaderThread.drawPPAP) {
                     sendDraw = "DRAW&" + e.getX() + "," + e.getY();
                     brush.setX(e.getX());
                     brush.setY(e.getY());
@@ -420,7 +453,69 @@ public class CatchMindClient extends JFrame {
             brush.setClearC(false);
             cleanDraw();
         });
+
+        btnEndGame.addActionListener(e -> System.exit(0)); // 게임 종료 버튼
+        btnRestart.addActionListener(e -> restartGame());  // 재시작 버튼
     }
+
+    // 게임 종료 화면 표시
+    public void showEndGameScreen(String scores) {
+        System.out.println("Showing End Game Screen...");
+
+        // 종료 화면 활성화
+        plDrawRoom.setVisible(false); // 게임 화면 비활성화
+        plId.setVisible(false);       // ID 입력 화면 비활성화
+        plEndGame.setVisible(true);   // 종료 화면 활성화
+
+        // 점수 데이터 표시
+        lbScores.setText("<html><div style='text-align:center;'>" + scores.replace("\n", "<br>") + "</div></html>");
+        plEndGame.add(lbScores);
+
+        // 종료 버튼 리스너
+        btnEndGame.addActionListener(e -> System.exit(0));
+
+        // 재시작 버튼 리스너
+        btnRestart.addActionListener(e -> restartGame());
+
+        // 갱신
+        plMain.revalidate();
+        plMain.repaint();
+    }
+
+    // 재시작 메서드
+    private void restartGame() {
+        plEndGame.setVisible(false); // 종료 화면 숨김
+        plId.setVisible(true);       // 초기화면 활성화
+        btnStart.setVisible(true);   // 시작 버튼 활성화
+        plDrawRoom.setVisible(false); // 그리기 방 비활성화
+        resetGameState();            // 게임 상태 초기화
+    }
+    // 게임 상태 초기화
+    private void resetGameState() {
+        brush.setClearC(true);
+        cleanDraw(); // 캔버스 초기화
+        tfIdInput.setText(""); // 아이디 입력 필드 초기화
+        taChat.setText(""); // 채팅 창 초기화
+        taUserList.setText(""); // 유저 리스트 초기화
+        drawPPAP = false; // 그림 그리기 비활성화
+    }
+
+    // 서버로부터 종료 메시지를 받아 화면 표시
+    private void handleServerMessage(String[] message) {
+        if (message[0].equals("END")) {
+            System.out.println("message11 = " + message);
+            // 서버로부터 점수 데이터를 받아와 화면에 표시
+            StringBuilder scores = new StringBuilder("<html><div style='text-align:center;'>게임 종료!<br/>");
+            for (int i = 1; i < message.length; i++) {
+                scores.append(message[i]).append("<br/>");
+            }
+            scores.append("</div></html>");
+
+            // 종료 화면 활성화
+            showEndGameScreen(scores.toString());
+        }
+    }
+
 
     private void changePenColor(String colorName, Color color) {
         sendColor = "COLOR&" + colorName;
@@ -432,7 +527,7 @@ public class CatchMindClient extends JFrame {
     private void connectServer() {
         try {
             socket = new Socket("localhost", 3000);
-            new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, btnSkip, plBottom, tfChat, imgBuff).start();
+            new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, btnSkip, plBottom, tfChat, imgBuff,this).start();
 
         } catch (Exception e) {
             System.out.println(TAG + "서버 연결 실패");

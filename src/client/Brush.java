@@ -17,7 +17,7 @@ public class Brush extends JLabel {
 
     @Override
     public void paint(Graphics g) {
-        if (drawPen) {
+        if (drawPen) { // 그릴 수 있는 상태
             g.setColor(color);
             g.fillOval(xx - 10, yy - 10, 10, 10);
         } else {

@@ -8,11 +8,17 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
+
 
 public class CatchMindServer {
     private static final String LOG_TAG = "CatchMindServer: ";
-    private Vector<ClientHandler> connectedClients;
+   //private Vector<ClientHandler> connectedClients;
+
+    public static List<ClientHandler> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private ServerSocket server;
 
     private int readyCount = 0;
@@ -134,14 +140,8 @@ public class CatchMindServer {
         private void processChat(String[] parsedMessage) {
             if (parsedMessage.length > 1) {
                 String chatMessage = parsedMessage[1];
-                System.out.println("chatMessage = " + chatMessage);
                 broadcastMessage("CHAT", "[" + clientID + "]: " + chatMessage);
                 checkAnswer(chatMessage); // 채팅 메시지를 정답 체크 메서드로 전달
-
-                // 디버깅 로그
-                System.out.println("Current Turn: " + currentTurn);
-                System.out.println("Current Word Index: " + currentWordIndex);
-                System.out.println("Game Started: " + gameStarted);
             }
         }
 
@@ -189,8 +189,9 @@ public class CatchMindServer {
 //            }
 //
             // 게임 종료 조건
-            if (connectedClients.size() < 2) {
+            if (connectedClients.size() < 2 || currentWordIndex==0) {
                 gameEnded = true;
+                System.out.println("endGame1");
                 endGame();
             }
         }
@@ -225,15 +226,17 @@ public class CatchMindServer {
 
         private void processTurn() {
             if (gameStarted) { // answeredCorrectly 제거: 첫 턴도 처리해야 하기 때문
-                for (ClientHandler client : connectedClients) {
-                    client.output.println("NOTTURN&"); // 모두에게 NOTTURN 전송
-                }
+//                for (ClientHandler client : connectedClients) {
+//                    client.output.println("NOTTURN&"); // 모두에게 NOTTURN 전송
+//                }
                 for (ClientHandler client : connectedClients) {
                     if (client.turnIndex == currentTurn) { // 현재 턴의 클라이언트 찾기
                         String currentWord = ProblemManager.getProblem(currentWordIndex);
                         client.output.println("TURN&" + currentWord); // TURN과 제시어 전송
                         broadcastMessage("SERVER", "[" + client.clientID + "] is taking their turn.");
-                        break;
+                        //break;
+                    }else{
+                        client.output.println("NOTTURN&"); // NOTTURN 전송
                     }
                 }
 //                currentTurn++; // 턴을 다음 클라이언트로 이동
@@ -282,16 +285,35 @@ public class CatchMindServer {
         }
 
 
+        private String generateScoreBoard() {
+            StringBuilder scoreBoard = new StringBuilder();
+            for (ClientHandler client : connectedClients) {
+                scoreBoard.append(client.clientID)
+                        .append(": ")
+                        .append(client.score)
+                        .append("\n");
+            }
+            return scoreBoard.toString();
+        }
 
         private void endGame() {
-            broadcastMessage("SERVER", "Game over! Displaying results...");
+            System.out.println("endGame2");
+
+//            String scoreBoard = generateScoreBoard();
+//            broadcastMessage("END", scoreBoard);
+//            broadcastMessage("SERVER", "Game over! Displaying results...");
+//            for (ClientHandler client : connectedClients) {
+//                client.resetGameState();
+//            }
+            String scoreBoard = generateScoreBoard();
+
+            // 게임 종료 메시지 전송
             for (ClientHandler client : connectedClients) {
-                client.output.println("END&Final Scores:");
-                for (ClientHandler otherClient : connectedClients) {
-                    client.output.println("END&[" + otherClient.clientID + "] Score: " + otherClient.score);
-                }
-                client.resetGameState();
+                client.output.println("END&" + scoreBoard.replace("\n", "&"));
             }
+
+            // 서버 상태 초기화
+            resetGameState();
         }
 
         private void resetGameState() {

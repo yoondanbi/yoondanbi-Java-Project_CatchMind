@@ -22,13 +22,14 @@ class ReaderThread extends Thread {
     private TextField tfChat;
     private JScrollPane scrChat;
     private BufferedImage imgBuff;
-    private boolean drawPPAP;
+    private EndGameHandler endGameHandler; // 인터페이스 참조
+    public static boolean drawPPAP;
     private int selectProblem = 0;
 
 
     public ReaderThread(Socket socket, Brush brush, JTextArea taChat, JTextArea taUserList,
                         JScrollPane scrChat, JLabel laQuiz, JButton btnReady, JButton btnSkip,
-                        JPanel plBottom, TextField tfChat, BufferedImage imgBuff) {
+                        JPanel plBottom, TextField tfChat, BufferedImage imgBuff, EndGameHandler endGameHandler) {
         this.socket = socket;
         this.brush = brush;
         this.taChat = taChat;
@@ -39,7 +40,8 @@ class ReaderThread extends Thread {
         this.btnSkip = btnSkip;
         this.plBottom = plBottom;
         this.tfChat = tfChat;
-        this.imgBuff = imgBuff; // 추가
+        this.imgBuff = imgBuff;
+        this.endGameHandler = endGameHandler; // 인터페이스 설정
     }
     @Override
     public void run() {
@@ -89,6 +91,7 @@ class ReaderThread extends Thread {
                 selectNextProblem();
                 break;
             case "END":
+                System.out.println("parsReaderMsg = " + parsReaderMsg);
                 handleEnd(parsReaderMsg[1]);
                 break;
             default:
@@ -151,6 +154,7 @@ class ReaderThread extends Thread {
     }
 
     private void handleEnd(String message) {
+        System.out.println("message = " + message);
         taChat.append("[SERVER]: " + message + "\n");
         btnReady.setVisible(true);
         tfChat.setEnabled(true);
@@ -159,5 +163,7 @@ class ReaderThread extends Thread {
         btnReady.setVisible(true);
         laQuiz.setVisible(false);
         drawPPAP = true;
+        // 게임 종료 화면 호출
+        endGameHandler.showEndGameScreen(message);
     }
 }
