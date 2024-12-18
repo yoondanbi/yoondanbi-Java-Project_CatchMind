@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient11 extends JFrame implements EndGameHandler{
+public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
     public String[] problem = ProblemManager.getProblems();
@@ -57,7 +57,7 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
 
-    public CatchMindClient11() {
+    public CatchMindClient1() {
         init();
         setting();
         batch();
@@ -159,7 +159,7 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
         plId.setLayout(null);
         plId.setVisible(false); // 비활성화
         plId.setBackground(new Color(242, 242, 242));
-        plId.setBounds(44, 40, 650, 450); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
+        plId.setBounds(44, 100, 650, 400); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
         //plId.setBounds(0, 0, 800, 600); // 크기 통일
 
         plSub.setLayout(null);
@@ -411,6 +411,7 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
             plId.setVisible(true);
             plSub.setVisible(true);
             btnStart.setVisible(false);
+            btnId.setVisible(true);
         });
 
         btnId.addActionListener(e -> {
@@ -602,11 +603,13 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
     // 재시작 메서드
     private void restartGame() {
         plEndGame.setVisible(false); // 종료 화면 숨김
-        plId.setVisible(true);       // 초기화면 활성화
+        plId.setVisible(false);       // 초기화면 활성화
+        btnId.setVisible(false);
         btnStart.setVisible(true);   // 시작 버튼 활성화
         plDrawRoom.setVisible(false); // 그리기 방 비활성화
         resetGameState();            // 게임 상태 초기화
     }
+
     // 게임 상태 초기화
     private void resetGameState() {
         setSize(850, 600);
@@ -617,23 +620,6 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
         taUserList.setText(""); // 유저 리스트 초기화
         drawPPAP = false; // 그림 그리기 비활성화
     }
-
-    // 서버로부터 종료 메시지를 받아 화면 표시
-//    private void handleServerMessage(String[] message) {
-//        if (message[0].equals("END")) {
-//            System.out.println("message11 = " + message);
-//            // 서버로부터 점수 데이터를 받아와 화면에 표시
-//            StringBuilder scores = new StringBuilder("<html><div style='text-align:center;'>게임 종료!<br/>");
-//            for (int i = 1; i < message.length; i++) {
-//                scores.append(message[i]).append("<br/>");
-//            }
-//            scores.append("</div></html>");
-//
-//            // 종료 화면 활성화
-//            showEndGameScreen(scores.toString());
-//        }
-//    }
-
 
     private void changePenColor(String colorName, Color color) {
         sendColor = "COLOR&" + colorName;
@@ -730,6 +716,6 @@ public class CatchMindClient11 extends JFrame implements EndGameHandler{
 
 
     public static void main(String[] args) {
-        new CatchMindClient11();
+        new CatchMindClient1();
     }
 }
