@@ -91,8 +91,7 @@ class ReaderThread extends Thread {
                 selectNextProblem();
                 break;
             case "END":
-                System.out.println("parsReaderMsg = " + parsReaderMsg);
-                handleEnd(parsReaderMsg[1]);
+                handleEnd(parsReaderMsg);
                 break;
             default:
                 taChat.append("\n");
@@ -153,9 +152,7 @@ class ReaderThread extends Thread {
         }
     }
 
-    private void handleEnd(String message) {
-        System.out.println("message = " + message);
-        taChat.append("[SERVER]: " + message + "\n");
+    private void handleEnd(String[] parsReaderMsg) {
         btnReady.setVisible(true);
         tfChat.setEnabled(true);
         plBottom.setVisible(true);
@@ -164,6 +161,18 @@ class ReaderThread extends Thread {
         laQuiz.setVisible(false);
         drawPPAP = true;
         // 게임 종료 화면 호출
-        endGameHandler.showEndGameScreen(message);
+        // parsReaderMsg[1]부터 시작하여 ID와 점수 데이터를 합쳐서 전달
+        StringBuilder scores = new StringBuilder();
+        for (int i = 1; i < parsReaderMsg.length; i++) {
+            scores.append(parsReaderMsg[i]).append("&");
+        }
+
+        // 마지막 & 제거
+        if (scores.length() > 0) {
+            scores.setLength(scores.length() - 1);
+        }
+
+        // 게임 종료 화면 호출
+        endGameHandler.showEndGameScreen(scores.toString());
     }
 }

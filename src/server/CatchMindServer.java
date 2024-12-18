@@ -155,6 +155,8 @@ public class CatchMindServer {
                 for (ClientHandler client : connectedClients) {
                     client.output.println("ANSWER&" + currentWord);
                 }
+               // score++; // 정답 맞춘 클라이언트의 점수 증가
+                broadcastMessage("SERVER", "[" + clientID + "] 점수: " + score);
 
                 assignNextTurnToCorrectAnswerer(this); // 정답자에게 다음 턴 권한
                 moveToNextWord();
@@ -298,19 +300,24 @@ public class CatchMindServer {
 
         private void endGame() {
             System.out.println("endGame2");
-
-//            String scoreBoard = generateScoreBoard();
-//            broadcastMessage("END", scoreBoard);
-//            broadcastMessage("SERVER", "Game over! Displaying results...");
-//            for (ClientHandler client : connectedClients) {
-//                client.resetGameState();
-//            }
             String scoreBoard = generateScoreBoard();
 
-            // 게임 종료 메시지 전송
+            // 모든 클라이언트에 게임 종료 메시지 전송
             for (ClientHandler client : connectedClients) {
                 client.output.println("END&" + scoreBoard.replace("\n", "&"));
+                try {
+                    client.clientSocket.close(); // 클라이언트 소켓 닫기
+                } catch (IOException e) {
+                    System.out.println(LOG_TAG + "Error closing client socket: " + e.getMessage());
+                }
             }
+            for (ClientHandler client : connectedClients) {
+                client.resetGameState();
+            }
+
+
+            // 클라이언트 리스트 비우기
+            connectedClients.clear();
 
             // 서버 상태 초기화
             resetGameState();
