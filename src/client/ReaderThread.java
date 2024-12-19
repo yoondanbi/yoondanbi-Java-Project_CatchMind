@@ -17,7 +17,7 @@ class ReaderThread extends Thread {
     private JTextArea taChat;
     private JTextArea taUserList;
     private JLabel laQuiz;
-    private JButton btnReady, btnSkip;
+    private JButton btnReady;
     private JPanel plBottom;
     private TextField tfChat;
     private JScrollPane scrChat;
@@ -28,7 +28,7 @@ class ReaderThread extends Thread {
     private String IDString; // 현재 사용자의 아이디 추가
 
     public ReaderThread(Socket socket, Brush brush, JTextArea taChat, JTextArea taUserList,
-                        JScrollPane scrChat, JLabel laQuiz, JButton btnReady, JButton btnSkip,
+                        JScrollPane scrChat, JLabel laQuiz, JButton btnReady,
                         JPanel plBottom, TextField tfChat, BufferedImage imgBuff, EndGameHandler endGameHandler, String IDString) {
         this.socket = socket;
         this.brush = brush;
@@ -37,7 +37,6 @@ class ReaderThread extends Thread {
         this.scrChat = scrChat; // 추가
         this.laQuiz = laQuiz;
         this.btnReady = btnReady;
-        this.btnSkip = btnSkip;
         this.plBottom = plBottom;
         this.tfChat = tfChat;
         this.imgBuff = imgBuff;
@@ -145,7 +144,6 @@ class ReaderThread extends Thread {
     private void handleTurn() {
         laQuiz.setText(ProblemManager.getProblem(selectProblem));
         laQuiz.setVisible(true);
-        btnSkip.setVisible(true);
         drawPPAP = true;
         tfChat.setEnabled(false);
         plBottom.setVisible(true);
@@ -153,7 +151,6 @@ class ReaderThread extends Thread {
 
     private void handleNotTurn() {
         laQuiz.setVisible(false);
-        btnSkip.setVisible(false);
         drawPPAP = false;
         brush.setDrawPen(false);
         tfChat.setEnabled(true);
@@ -171,7 +168,6 @@ class ReaderThread extends Thread {
         btnReady.setVisible(true);
         tfChat.setEnabled(true);
         plBottom.setVisible(true);
-        btnSkip.setVisible(false);
         btnReady.setVisible(true);
         laQuiz.setVisible(false);
         drawPPAP = true;

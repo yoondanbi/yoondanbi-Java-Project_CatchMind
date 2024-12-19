@@ -1,7 +1,6 @@
 package client;
 
 import client.components.*;
-import manager.ProblemManager;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -18,8 +17,6 @@ import java.net.Socket;
 public class CatchMindClient12 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
-    public String[] problem = ProblemManager.getProblems();
-    public int selectProblem = 0;
 
     private ImageIcon icGameStart, iconBlackPen, iconRedPen, iconOrangePen, iconYellowPen,
             iconGreenPen, iconBluePen, iconIndigoPen, iconPurplePen;
@@ -45,11 +42,9 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
     private JScrollPane scrChat;
 
     private JLabel laQuizTitle, laQuiz, laId, lbScores;
-    private JButton btnId, btnSkip, btnReady, btnExit, btnEndGame, btnRestart;
+    private JButton btnId, btnReady, btnExit, btnEndGame, btnRestart;
 
     private Font ftSmall, ftMedium, ftLarge;
-    //int x, y;
-
     private BufferedImage imgBuff;
     private JLabel drawLabel;
     private Brush brush;
@@ -83,11 +78,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         btnPanel = new JPanel();
         plChat = new JPanel();  // plChat 객체 초기화 추가
 
-
-        // 종료 화면 배경 및 버튼 이미지 설정
-//        endGameBg = new ImageIcon("img/endGame.png");
-//        endGameBtnIcon = new ImageIcon("img/endGameBtn.png");
-//        restartBtnIcon = new ImageIcon("img/restartBtn.png");
         plEndGame = new JPanel();
         plEndGame.setLayout(null);
         plEndGame.setBounds(0, 0, 800, 640);
@@ -108,7 +98,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
 
         btnStart = new JButton(icGameStart);
         btnId = new JButton(icGameStart);
-        btnSkip = new JButton("넘기기");
         btnReady = new JButton("준비");
         btnExit = new JButton("나가기");
 
@@ -151,9 +140,7 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         // plMain
         setContentPane(plMain);
         plMain.setLayout(null);
-        //btnStart.setBounds(300, 360, 180, 110); // btnStart 위치, 크기 조정 (x, y, width, height)
         btnStart.setBounds(300, 400, 200, 80); // 시작 버튼 위치 조정
-       // btnStart.setBorderPainted(false); // 버튼 테두리 제거
 
         icGameStart = new ImageIcon("img/gameStart.png"); // 게임시작 버튼 이미지
         // plId
@@ -161,7 +148,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         plId.setVisible(false); // 비활성화
         plId.setBackground(new Color(242, 242, 242));
         plId.setBounds(44, 100, 650, 400); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
-        //plId.setBounds(0, 0, 800, 600); // 크기 통일
 
         plSub.setLayout(null);
         plSub.setVisible(false); // 비활성화
@@ -176,35 +162,26 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
 
 
         tfIdInput.setBounds(65, 3, 185, 34);
-        //tfIdInput.setBounds(63, 3, 180, 30); // tfIdInput 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
         tfIdInput.setBackground(new Color(242, 242, 242, 255));
         tfIdInput.setFont(ftMedium);
-
         btnId.setBounds(300, 300, 200, 80); // 아이디 확인 버튼 위치 조정
-        //btnId.setBounds(120, 150, 180, 110); // btnId 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
-        //btnId.setBorderPainted(false); // 버튼 테두리 제거
 
-        // plDrawRoom
         plDrawRoom.setLayout(null);
         plDrawRoom.setVisible(false); // 비활성화
         plDrawRoom.setBounds(59, 105, 1005, 656);// plDrawRoom 위치, 크기 조정 좌표는 plMain 기준
 
-        // plDrawRoom - plTopMpId
         plTopMpId.setLayout(null);
         plTopMpId.setBackground(new Color(255, 255, 255, 255));
         plTopMpId.setBounds(0, 0, 750, 530);
 
-        // plDrawRoom - plTop
         plTop.setLayout(null);
         plTop.setBackground(new Color(255, 255, 255, 0));
         plTop.setBounds(0, 0, 750, 80); // plTop 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plMplId
         plMplId.setLayout(null);
         plMplId.setBackground(new Color(255, 255, 255, 255));
         plMplId.setBounds(0, 110, 750, 450); // plMplId 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plBottom
         plBottom.setLayout(null);
         plBottom.setBackground(new Color(242, 242, 242, 255));
         plBottom.setBounds(0, 530, 700, 130); // plBottom 위치, 크기 조정 좌표는 plDrawRoom 기준
@@ -250,19 +227,15 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         btnPurpleDrawPen.setBounds(455, 0, 65, 130);
         btnPurpleDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
-        // plDrawRoom - plEast
         plEast.setLayout(null);
         plEast.setBounds(750, 0, 255, 530); // plEast 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plChat
         plChat.setLayout(null);
 
-        // plDrawRoom - btnPanel
         btnPanel.setLayout(null);
         btnPanel.setBackground(new Color(242, 242, 242, 255));
         btnPanel.setBounds(700, 530, 405, 130);
 
-        // plBottom
         plPalette.setLayout(null);
         plPalette.setBackground(new Color(242, 242, 242, 255));
         plPalette.setBounds(0, 0, 520, 130); // plPalette 위치, 크기 조정 좌표는 plBottom 기준
@@ -312,12 +285,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         btnReady.setFont(ftMedium);
         btnReady.setBackground(new Color(242, 242, 242, 255));
         btnReady.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
-
-        btnSkip.setVisible(false);
-        btnSkip.setBounds(150, 2, 155, 65); // btnSkip 위치, 크기 조정 좌표는 plTop 기준
-        btnSkip.setFont(ftMedium);
-        btnSkip.setBackground(new Color(242, 242, 242, 255));
-        btnSkip.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
 
         btnExit.setBounds(150, 62, 155, 65); // btnExit 위치, 크기 조정 좌표는 plEast 기준
         btnExit.setFont(ftMedium);
@@ -393,7 +360,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         btnPanel.add(laQuiz);
         btnPanel.add(laQuizTitle);
         btnPanel.add(btnReady);
-        btnPanel.add(btnSkip);
         btnPanel.add(btnExit);
 
         // 드로우
@@ -426,8 +392,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         });
 
         btnReady.addActionListener(e -> sendReady());
-
-        btnSkip.addActionListener(e -> sendSkip());
 
         drawLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -600,7 +564,6 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
         plMain.repaint();
     }
 
-
     // 재시작 메서드
     private void restartGame() {
         plEndGame.setVisible(false); // 종료 화면 숨김
@@ -649,7 +612,7 @@ public class CatchMindClient12 extends JFrame implements EndGameHandler{
     private void connectServer() {
         try {
             socket = new Socket("localhost", 3000);
-            readerThread = new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, btnSkip, plBottom, tfChat, imgBuff, this, IDString);
+            readerThread = new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, plBottom, tfChat, imgBuff, this, IDString);
             readerThread.start();
 
         } catch (Exception e) {
