@@ -6,12 +6,16 @@ import manager.ProblemManager;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient extends JFrame implements EndGameHandler{
+public class CatchMindClient12 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
     public String[] problem = ProblemManager.getProblems();
@@ -54,7 +58,7 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
     public static boolean drawPPAP = true;
     ReaderThread readerThread;
 
-    public CatchMindClient() {
+    public CatchMindClient12() {
         init();
         setting();
         batch();
@@ -545,15 +549,15 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         btnRestart.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         // hover 효과 (재시작 버튼)
-        btnRestart.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnRestart.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 btnRestart.setBackground(new Color(87, 255, 87)); // 초록색 배경
                 btnRestart.setForeground(Color.WHITE); // 흰색 글자
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 btnRestart.setBackground(Color.WHITE); // 기본 흰색 배경
                 btnRestart.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
@@ -571,15 +575,15 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         btnEndGame.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         // hover 효과 (종료 버튼)
-        btnEndGame.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnEndGame.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 btnEndGame.setBackground(new Color(255, 87, 87)); // 빨간색 배경
                 btnEndGame.setForeground(Color.WHITE); // 흰색 글자
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 btnEndGame.setBackground(Color.WHITE); // 기본 흰색 배경
                 btnEndGame.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
@@ -734,6 +738,6 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
 
 
     public static void main(String[] args) {
-        new CatchMindClient();
+        new CatchMindClient12();
     }
 }

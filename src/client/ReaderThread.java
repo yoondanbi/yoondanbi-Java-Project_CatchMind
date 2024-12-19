@@ -25,11 +25,11 @@ class ReaderThread extends Thread {
     private EndGameHandler endGameHandler; // 인터페이스 참조
     public static boolean drawPPAP;
     private int selectProblem = 0;
-
+    private String IDString; // 현재 사용자의 아이디 추가
 
     public ReaderThread(Socket socket, Brush brush, JTextArea taChat, JTextArea taUserList,
                         JScrollPane scrChat, JLabel laQuiz, JButton btnReady, JButton btnSkip,
-                        JPanel plBottom, TextField tfChat, BufferedImage imgBuff, EndGameHandler endGameHandler) {
+                        JPanel plBottom, TextField tfChat, BufferedImage imgBuff, EndGameHandler endGameHandler, String IDString) {
         this.socket = socket;
         this.brush = brush;
         this.taChat = taChat;
@@ -42,7 +42,14 @@ class ReaderThread extends Thread {
         this.tfChat = tfChat;
         this.imgBuff = imgBuff;
         this.endGameHandler = endGameHandler; // 인터페이스 설정
+        this.IDString = IDString; // 아이디 저장
     }
+
+    public void setIDString(String IDString) {
+        System.out.println("IDStringSeet = " + IDString);
+        this.IDString = IDString;
+    }
+
     @Override
     public void run() {
         try {
@@ -79,7 +86,15 @@ class ReaderThread extends Thread {
                 taUserList.setText("");
                 break;
             case "IDLIST":
-                taUserList.append(parsReaderMsg[1] + "\n");
+                // 아이디 목록에서 본인 아이디만 표시
+                System.out.println("IDString11 = " + IDString);
+                System.out.println("parsReaderMsg.length = " + parsReaderMsg.length);
+                System.out.println("parsReaderMsg[1] = " + parsReaderMsg[parsReaderMsg.length-1]);
+                taUserList.setText(IDString + "\n");
+//                if (parsReaderMsg.length > 1 && parsReaderMsg[1].equals(IDString)) {
+//                    System.out.println("sasad");
+//                    taUserList.setText(parsReaderMsg[1] + "\n");
+//                }
                 break;
             case "TURN":
                 handleTurn();

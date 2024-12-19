@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient1 extends JFrame implements EndGameHandler{
+public class CatchMindClient11 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
     public String[] problem = ProblemManager.getProblems();
@@ -56,8 +56,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private ImageIcon endGameBg, endGameBtnIcon, restartBtnIcon;
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
+    ReaderThread readerThread;
 
-    public CatchMindClient1() {
+    public CatchMindClient11() {
         init();
         setting();
         batch();
@@ -608,6 +609,22 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         btnStart.setVisible(true);   // 시작 버튼 활성화
         plDrawRoom.setVisible(false); // 그리기 방 비활성화
         resetGameState();            // 게임 상태 초기화
+
+        // **plEndGame 초기화**
+        clearEndGameScreen();
+    }
+    // plEndGame 초기화 메서드
+    private void clearEndGameScreen() {
+        // plEndGame에 추가된 모든 컴포넌트 제거
+        plEndGame.removeAll();
+
+        // 기본 종료 버튼과 재시작 버튼 다시 추가
+        plEndGame.add(btnRestart);
+        plEndGame.add(btnEndGame);
+
+        // 갱신
+        plEndGame.revalidate();
+        plEndGame.repaint();
     }
 
     // 게임 상태 초기화
@@ -619,6 +636,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         taChat.setText(""); // 채팅 창 초기화
         taUserList.setText(""); // 유저 리스트 초기화
         drawPPAP = false; // 그림 그리기 비활성화
+        readerThread.setIDString("");
     }
 
     private void changePenColor(String colorName, Color color) {
@@ -631,7 +649,8 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private void connectServer() {
         try {
             socket = new Socket("localhost", 3000);
-            new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, btnSkip, plBottom, tfChat, imgBuff,this).start();
+            readerThread = new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, btnSkip, plBottom, tfChat, imgBuff, this, IDString);
+            readerThread.start();
 
         } catch (Exception e) {
             System.out.println(TAG + "서버 연결 실패");
@@ -686,21 +705,24 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         try {
             writer = new PrintWriter(socket.getOutputStream(), true);
             IDString = tfIdInput.getText();
+            System.out.println("IDString = " + IDString);
             if ((IDString.equals(""))) {
                 IDString = "user" + (int)(Math.random() * 10000); // 랜덤한 더미값 생성
-                writer.println("ID&" + IDString);
                 plId.setVisible(false); // plId 비활성화
                 plSub.setVisible(false); // plId 활성화
                 plDrawRoom.setVisible(true); // plDrawRoom 활성화
                 setSize(1100, 800);
             } else { // 아이디 존재
-                writer.println("ID&" + IDString);
+                //writer.println("ID&" + IDString);
                 tfIdInput.setText("");
                 plId.setVisible(false); // plId 비활성화
                 plSub.setVisible(false); // plId 활성화
                 plDrawRoom.setVisible(true); // plDrawRoom 활성화
                 setSize(1100, 800);
             }
+            readerThread.setIDString(IDString);
+            writer.println("ID&" + IDString);
+
 
         } catch (IOException e) {
             System.out.println(TAG + "준비 메세지 요청 실패");
@@ -716,6 +738,6 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
 
     public static void main(String[] args) {
-        new CatchMindClient1();
+        new CatchMindClient11();
     }
 }
