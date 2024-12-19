@@ -16,16 +16,16 @@ import java.util.Vector;
 
 public class CatchMindServer {
     private static final String LOG_TAG = "CatchMindServer: ";
+    private static final int PORT = 3000;
     public static List<ClientHandler> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private ServerSocket server;
-
     private int readyCount = 0;
     private boolean gameStarted = false;
     private int currentWordIndex = 0;
 
     public CatchMindServer() {
         try {
-            server = new ServerSocket(3000);
+            server = new ServerSocket(PORT);
             connectedClients = new Vector<>();
             while (true) {
                 System.out.println("Waiting for client connections...");
@@ -43,13 +43,11 @@ public class CatchMindServer {
         private Socket clientSocket;
         private PrintWriter output;
         private BufferedReader input;
-
         private boolean ready = false;
         private boolean gameEnded = false;
         private boolean answeredCorrectly = false;
         private int turnIndex = 0;
         private int currentTurn = 1;
-
         private String clientID;
         private int score = 0;
 
@@ -134,7 +132,6 @@ public class CatchMindServer {
             }
         }
 
-
         private void processChat(String[] parsedMessage) {
             if (parsedMessage.length > 1) {
                 String chatMessage = parsedMessage[1];
@@ -142,7 +139,6 @@ public class CatchMindServer {
                 checkAnswer(chatMessage); // 채팅 메시지를 정답 체크 메서드로 전달
             }
         }
-
 
         private void checkAnswer(String answer) {
             String currentWord = ProblemManager.getProblem(currentWordIndex);
@@ -185,10 +181,6 @@ public class CatchMindServer {
                 currentWordIndex = 0; // 제시어 순환
             }
 
-//            if (currentTurn > connectedClients.size()) {
-//                currentTurn = 1; // 턴 초기화
-//            }
-//
             // 게임 종료 조건
             if (connectedClients.size() < 2 || currentWordIndex==0) {
                 gameEnded = true;
@@ -196,7 +188,6 @@ public class CatchMindServer {
                 endGame();
             }
         }
-
 
         private void toggleReadyStatus() {
             ready = !ready; // 준비 상태 토글
@@ -214,7 +205,6 @@ public class CatchMindServer {
             }
         }
 
-
         private void startGame() {
             if (readyCount == connectedClients.size() && !gameStarted) {
                 System.out.println("StartGame!! = " + clientSocket);
@@ -229,12 +219,8 @@ public class CatchMindServer {
             }
         }
 
-
         private void processTurn() {
             if (gameStarted) { // answeredCorrectly 제거: 첫 턴도 처리해야 하기 때문
-//                for (ClientHandler client : connectedClients) {
-//                    client.output.println("NOTTURN&"); // 모두에게 NOTTURN 전송
-//                }
                 for (ClientHandler client : connectedClients) {
                     if (client.turnIndex == currentTurn) { // 현재 턴의 클라이언트 찾기
                         String currentWord = ProblemManager.getProblem(currentWordIndex);
@@ -245,16 +231,10 @@ public class CatchMindServer {
                         client.output.println("NOTTURN&"); // NOTTURN 전송
                     }
                 }
-//                currentTurn++; // 턴을 다음 클라이언트로 이동
-//                if (currentTurn > connectedClients.size()) {
-//                    currentTurn = 1; // 턴이 마지막 클라이언트를 넘어가면 초기화
-//                }
-//
                 // 상태 초기화
                 answeredCorrectly = false;
             }
         }
-
 
         private void forwardDrawing(String[] parsedMessage) {
             for (ClientHandler client : connectedClients) {
@@ -318,7 +298,6 @@ public class CatchMindServer {
             for (ClientHandler client : connectedClients) {
                 client.resetGameState();
             }
-
 
             // 클라이언트 리스트 비우기
             connectedClients.clear();

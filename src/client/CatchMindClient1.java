@@ -656,16 +656,6 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         }
     }
 
-    // SKIP 프로토콜 메서드.
-    private void sendSkip() {
-        try {
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            writer.println("SKIP&");
-        } catch (Exception e) {
-            System.out.println(TAG + "Skip Msg writer fail...");
-        }
-    }
-
     // READY 프로토콜 메서드.
     private void sendReady() {
         try {
