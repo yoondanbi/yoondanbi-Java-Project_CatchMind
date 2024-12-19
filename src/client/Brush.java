@@ -19,14 +19,14 @@ public class Brush extends JLabel {
     public void paint(Graphics g) {
         if (drawPen) { // 그릴 수 있는 상태
             g.setColor(color);
-            g.fillOval(xx - 10, yy - 10, 10, 10);
+            g.fillOval(xx - 15, yy - 15, 15, 15);
         } else {
             g.setColor(Color.WHITE);
             g.fillOval(0, 0, 0, 0);
         }
         if (clearC) {
             g.setColor(color);
-            g.fillOval(xx - 10, yy - 10, 10, 10);
+            g.fillOval(xx - 15, yy - 15, 15, 15);
         } else {
             g.setColor(Color.WHITE);
             g.fillRect(0, 0, 1000, 1000);

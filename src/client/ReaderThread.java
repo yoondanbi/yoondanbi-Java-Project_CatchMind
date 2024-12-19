@@ -104,7 +104,6 @@ class ReaderThread extends Thread {
                     }
                 }
                 break;
-
             case "TURN":
                 handleTurn(); // 사용자 턴 처리
                 break;
