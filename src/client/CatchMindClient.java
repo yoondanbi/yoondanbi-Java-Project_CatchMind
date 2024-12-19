@@ -48,6 +48,7 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
     ReaderThread readerThread;
+    private boolean isReady = false; // 버튼 상태를 저장하는 변수 (false: 준비 안 됨, true: 준비됨)
 
     public CatchMindClient() {
         init();
@@ -387,7 +388,24 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
             System.exit(0);
         });
 
-        btnReady.addActionListener(e -> sendReady());
+        btnReady.addActionListener(e -> {
+            if (!btnReady.isEnabled()) {
+                return; // 버튼이 비활성화된 경우 동작하지 않음
+            }
+            isReady = !isReady; // 준비 상태 토글
+            btnReady.setFocusPainted(false); // 포커스 효과 제거
+            if (isReady) {
+                btnReady.setText("준비 취소"); // 텍스트 변경
+                btnReady.setBackground(new Color(107, 109, 109)); // 초록색으로 변경
+                btnReady.setForeground(Color.WHITE); // 텍스트 흰색
+                sendReady(); // 서버에 준비 상태 전송
+            } else {
+                btnReady.setText("준비"); // 텍스트 변경
+                btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색으로 변경
+                btnReady.setForeground(Color.BLACK); // 텍스트 검정색
+                sendReady(); // 서버에 준비 취소 상태 전송
+            }
+        });
 
         drawLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
@@ -558,6 +576,13 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         // 갱신
         plMain.revalidate();
         plMain.repaint();
+
+        // 준비 버튼 초기화
+        btnReady.setEnabled(true);
+        btnReady.setText("준비");
+        btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색
+        btnReady.setForeground(Color.BLACK); // 기본 텍스트 색상
+        isReady = false;
     }
 
     // 재시작 메서드
@@ -595,6 +620,7 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         taChat.setText(""); // 채팅 창 초기화
         taUserList.setText(""); // 유저 리스트 초기화
         drawPPAP = false; // 그림 그리기 비활성화
+        isReady= false;
         readerThread.setIDString("");
     }
 
@@ -694,7 +720,6 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         brush.repaint();
         brush.printAll(imgBuff.getGraphics());
     }
-
 
     public static void main(String[] args) {
         new CatchMindClient();

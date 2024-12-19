@@ -16,8 +16,6 @@ import java.util.Vector;
 
 public class CatchMindServer {
     private static final String LOG_TAG = "CatchMindServer: ";
-   //private Vector<ClientHandler> connectedClients;
-
     public static List<ClientHandler> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private ServerSocket server;
 
@@ -131,11 +129,11 @@ public class CatchMindServer {
 
         private void sendClientList() {
             for (ClientHandler client : connectedClients) {
-                for (ClientHandler otherClient : connectedClients) {
-                    client.output.println("IDLIST&[" + otherClient.clientID + "]");
-                }
+                String clientInfo = "IDLIST&" + client.clientID + ":" + client.score;
+                client.output.println(clientInfo);
             }
         }
+
 
         private void processChat(String[] parsedMessage) {
             if (parsedMessage.length > 1) {
@@ -174,6 +172,7 @@ public class CatchMindServer {
             for (ClientHandler client : connectedClients) {
                 if (client.clientID.equals(clientID)) {
                     client.score++;
+                    sendClientList(); // 점수 변경 후 업데이트
                     client.output.println("SERVER&Your current score: " + client.score);
                     break;
                 }
@@ -221,6 +220,11 @@ public class CatchMindServer {
                 System.out.println("StartGame!! = " + clientSocket);
                 gameStarted = true; // 게임 시작 상태 업데이트
                 broadcastMessage("SERVER", "Game is starting!");
+                // 모든 클라이언트에게 "START" 메시지 전송
+                for (ClientHandler client : connectedClients) {
+                    client.output.println("START&");
+                }
+
                 processTurn(); // 첫 턴 시작
             }
         }
