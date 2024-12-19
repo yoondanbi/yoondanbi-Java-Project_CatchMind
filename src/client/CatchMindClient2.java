@@ -1,196 +1,57 @@
-// 최종본
 package client;
+
+import client.components.*;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient2 extends JFrame {
-    // 필수 태그
+public class CatchMindClient2 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
-    // 클라이언트가 입력한 아이디 값을 클라이언트도 알도록 전역 변수로 설정.
     private String IDString;
-    // 제시어를 담아놓은 배열.
-    public String[] problem = { "상어", "과제", "시험", "자바", "프로젝트" };
-    // 턴이 변화할 때 마다 제시어를 순차적으로 선택하는 변수.
-    public int selectProblem = 0;
 
-    private ImageIcon icGameStart;
+    private ImageIcon icGameStart, iconBlackPen, iconRedPen, iconOrangePen, iconYellowPen,
+            iconGreenPen, iconBluePen, iconIndigoPen, iconPurplePen;
 
-    private ImageIcon iconBlackPen;
-    private ImageIcon iconRedPen;
-    private ImageIcon iconOrangePen;
-    private ImageIcon iconYellowPen;
-    private ImageIcon iconGreenPen;
-    private ImageIcon iconBluePen;
-    private ImageIcon iconIndigoPen;
-    private ImageIcon iconPurplePen;
-
-    // 통신
     private Socket socket;
     private PrintWriter writer;
     private BufferedReader reader;
 
-    // 이미지 패널
-    private MyPanel plMain; // 초기 메인 화면 이미지
+    private MyPanel plMain;
+    private JButton btnStart;
+    private JPanel plId, plSub, plDrawRoom, plTopMpId, plTop, plMplId, plBottom, plEast, btnPanel, plEndGame;
+    private MyPanel1 plDraw;
+    private MyPanel2 plPalette;
+    private MyButton btnEraser;
+    private MyButton1 btnDelete;
 
-    // plMain에 포함됨
-    private JButton btnStart; // 아이디 입력 전 게임시작 버튼
+    private JButton btnBlackDrawPen, btnRedDrawPen, btnOrangeDrawPen, btnYellowDrawPen, btnGreenDrawPen,
+            btnBlueDrawPen, btnIndigoDrawPen, btnPurpleDrawPen;
 
-    // btnStart을 누르면 plId이 나타남
-    private JPanel plId; // 아이디 입력 패널
-    private JPanel plSub; // 아이디 입력 패널
-
-    // plId에 포함됨
-    private JLabel laId; // '아이디를 입력하세요'라벨
-    private TextField tfIdInput; // 아이디 입력
-    private JButton btnId; // 아이디 입력 버튼
-
-    // btnStart을 누르면 plDrawRoom로 바뀜
-    private JPanel plDrawRoom; // 그리기방 패널(화면 전체)
-
-    // plDrawRoom에 포함됨
-
-    // plTop과 plMplId
-    private JPanel plTopMpId;
-
-    // 위쪽 방 이름 , 제시어, 넘기기 버튼
-    private JPanel plTop;
-
-    // plTop에 포함됨
-    private JLabel laQuizTitle; // '제시어 : ' 라벨
-    private JLabel laQuiz; // 제시어 변수 라벨
-    private JButton btnSkip; // 넘기기 버튼
-
-    // 왼쪽을 포함한 중간 그림판
-    private JPanel plMplId; // 그림판
-
-    // plMplId에 포함됨
-    private MyPanel1 plDraw; // 그림판 이미지
-
-    // 아래쪽 팔레트
-    private JPanel plBottom; // 팔레트
-
-    private MyButton1 btnDelete; // 지우개 이미지
-
-    // plBottom에 포함됨
-    private MyPanel2 plPalette; // 크레파스 이미지
-
-    private JButton btnBlackDrawPen;
-    private JButton btnRedDrawPen;
-    private JButton btnOrangeDrawPen;
-    private JButton btnYellowDrawPen;
-    private JButton btnGreenDrawPen;
-    private JButton btnBlueDrawPen;
-    private JButton btnIndigoDrawPen;
-    private JButton btnPurpleDrawPen;
-
-    private MyButton btnEraser; // 지우개 이미지
-
-    // 오른쪽 유저목록, 채팅, 준비완료, 나가기 버튼
-    private JPanel plEast;
-
-    // plEast에 포함됨
-    private JTextArea taUserList; // 유저 목록 라벨
-
-    // plEast에 포함된 채팅 패널
-    private JPanel plChat; // 채팅창, 채팅 입력란
-
-    // plChat에 포함됨
-    private TextField tfChat; // 채팅 입력
-    private JTextArea taChat; // 채팅 로그
+    private JTextArea taUserList, taChat;
+    private JPanel plChat;
+    private TextField tfChat, tfIdInput;
     private JScrollPane scrChat;
 
-    // 준비완료, 나가기 버튼 패널
-    private JPanel btnPanel; // 채팅창, 채팅 입력란
+    private JLabel laQuizTitle, laQuiz, laId, lbScores;
+    private JButton btnId, btnReady, btnExit, btnEndGame, btnRestart;
 
-    // btnPanel에 포함됨
-    private JButton btnReady; // 준비 완료 버튼
-    private JButton btnExit; // 나가기 버튼
-
-    // 폰트 크기 설정
-    private Font ftSmall; // 16px크기 폰트
-    private Font ftMedium; // 24px크기 폰트
-    private Font ftLarge; // 36px크기 폰트
-
-    // Brush 좌표값
-    int x, y;
-    // Brush 색깔
-    // Color color;
-
-    // Draw에 필요한 선언
+    private Font ftSmall, ftMedium, ftLarge;
     private BufferedImage imgBuff;
     private JLabel drawLabel;
-    private JPanel drawPanel;
     private Brush brush;
-    String sendDraw = null;
-    String sendColor = null;
-    boolean drawPPAP = true;
-
-    // 이미지 매서드
-    private ImageIcon ImageSetSize(ImageIcon icon, int width, int heigth) {
-        Image xImage = icon.getImage();
-        Image yImage = xImage.getScaledInstance(width, heigth, Image.SCALE_SMOOTH);
-        ImageIcon xyImage = new ImageIcon(yImage);
-        return xyImage;
-    }
-
-    // 이미지 삽입용 클래스
-    class MyPanel extends JPanel {
-        private ImageIcon icon = new ImageIcon("img/catchMindBG.png");
-        private Image imgMain = icon.getImage();
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-        }
-    };
-
-    class MyPanel1 extends JPanel {
-        private ImageIcon icon = new ImageIcon("img/draw.png");
-        private Image imgMain = icon.getImage();
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-        }
-    };
-
-    class MyPanel2 extends JPanel {
-        private ImageIcon icon = new ImageIcon("img/drawColor.png");
-        private Image imgMain = icon.getImage();
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-        }
-    };
-
-    class MyButton extends JButton {
-        private ImageIcon icon = new ImageIcon("img/drawEraser.png");
-        private Image imgMain = icon.getImage();
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-            setBorderPainted(false); // 버튼 테두리 제거
-        }
-    };
-
-    class MyButton1 extends JButton {
-        private ImageIcon icon = new ImageIcon("img/allDelete.png");
-        private Image imgMain = icon.getImage();
-
-        public void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
-            setBorderPainted(false); // 버튼 테두리 제거
-        }
-    };
+    String sendDraw, sendColor;
+    public static boolean drawPPAP = true;
+    ReaderThread readerThread;
+    private boolean isReady = false; // 버튼 상태를 저장하는 변수 (false: 준비 안 됨, true: 준비됨)
 
     public CatchMindClient2() {
         init();
@@ -201,31 +62,31 @@ public class CatchMindClient2 extends JFrame {
     }
 
     private void init() {
-        // 이미지 패널
-        plMain = new MyPanel(); // 초기 메인 화면 이미지
-        plTopMpId = new MyPanel1(); // plMplId - 그림판 이미지
-        plPalette = new MyPanel2(); // plBottom - 크레파스 이미지
-        btnEraser = new MyButton(); // plBottom - 지우개 이미지
-        btnDelete = new MyButton1(); // plBottom - 휴지통 이미지
+        plMain = new MyPanel();
+        plTopMpId = new MyPanel1();
+        plPalette = new MyPanel2();
+        btnEraser = new MyButton();
+        btnDelete = new MyButton1();
 
-        // 패널
-        plId = new JPanel(); // plMain - 초기 아이디 입력 패널
-        plSub = new JPanel(); // plMain - 초기 아이디 입력 패널
-        plDrawRoom = new JPanel(); // 아이디를 입력하고 버튼을 누르면 나오는 패널, 게임화면 전체
-
-        // plDrawRoom
+        plId = new JPanel();
+        plSub = new JPanel();
+        plDrawRoom = new JPanel();
         plTop = new JPanel();
         plMplId = new JPanel();
         plBottom = new JPanel();
         plEast = new JPanel();
         btnPanel = new JPanel();
+        plChat = new JPanel();  // plChat 객체 초기화 추가
 
-        // plEast
-        plChat = new JPanel();
+        plEndGame = new JPanel();
+        plEndGame.setLayout(null);
+        plEndGame.setBounds(0, 0, 800, 640);
+        plEndGame.setVisible(false);
+        lbScores = new JLabel();
+        btnEndGame = new JButton("게임 종료");
+        btnRestart = new JButton("재시작");
 
-        // 이미지
-        icGameStart = new ImageIcon("img/gameStart.png"); // 게임시작 버튼 이미지
-
+        icGameStart = new ImageIcon("img/gameStart.png");
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
         iconRedPen = new ImageIcon("img/drawRedPen.png");
         iconOrangePen = new ImageIcon("img/drawOrangePen.png");
@@ -235,12 +96,10 @@ public class CatchMindClient2 extends JFrame {
         iconIndigoPen = new ImageIcon("img/drawIndigoPen.png");
         iconPurplePen = new ImageIcon("img/drawPurplePen.png");
 
-        // 버튼
-        btnStart = new JButton(icGameStart); // plMain
-        btnId = new JButton(icGameStart); // plMain
-        btnSkip = new JButton("넘기기"); // plTop
-        btnReady = new JButton("준비"); // plEast
-        btnExit = new JButton("나가기"); // plEast
+        btnStart = new JButton(icGameStart);
+        btnId = new JButton(icGameStart);
+        btnReady = new JButton("준비");
+        btnExit = new JButton("나가기");
 
         btnBlackDrawPen = new JButton(iconBlackPen);
         btnRedDrawPen = new JButton(iconRedPen);
@@ -251,32 +110,26 @@ public class CatchMindClient2 extends JFrame {
         btnIndigoDrawPen = new JButton(iconIndigoPen);
         btnPurpleDrawPen = new JButton(iconPurplePen);
 
-        // 라벨
-        laId = new JLabel("아이디"); // plMain
+        laId = new JLabel("아이디");
         laQuizTitle = new JLabel("제시어");
-        laQuiz = new JLabel("변수"); // plTop
+        laQuiz = new JLabel("변수");
 
-        // 텍스트 입력란
-        tfIdInput = new TextField(); // plMain
-        tfChat = new TextField(); // plEast
+        tfIdInput = new TextField();
+        tfChat = new TextField();
 
-        // 텍스트 영역
-        taChat = new JTextArea(); // plEast
+        taChat = new JTextArea();
         taUserList = new JTextArea();
-        // 폰트
+
         ftSmall = new Font("맑은고딕", Font.PLAIN, 16);
         ftMedium = new Font("맑은고딕", Font.PLAIN, 24);
         ftLarge = new Font("맑은고딕", Font.PLAIN, 36);
 
-        // 스크롤 바
         scrChat = new JScrollPane(taChat, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        // 드로우 캔버스
         imgBuff = new BufferedImage(750, 450, BufferedImage.TYPE_INT_ARGB);
         drawLabel = new JLabel(new ImageIcon(imgBuff));
-        drawPanel = new JPanel();
-        brush = new Brush();
+        brush = new Brush(imgBuff);
     }
 
     private void setting() {
@@ -287,66 +140,59 @@ public class CatchMindClient2 extends JFrame {
         // plMain
         setContentPane(plMain);
         plMain.setLayout(null);
-        btnStart.setBounds(300, 360, 180, 110); // btnStart 위치, 크기 조정 (x, y, width, height)
-        btnStart.setBorderPainted(false); // 버튼 테두리 제거
+        btnStart.setBounds(300, 400, 200, 80); // 시작 버튼 위치 조정
 
-        icGameStart = ImageSetSize(icGameStart, 180, 110); // 게임 시작 버튼 이미지
+        icGameStart = new ImageIcon("img/gameStart.png"); // 게임시작 버튼 이미지
         // plId
         plId.setLayout(null);
         plId.setVisible(false); // 비활성화
         plId.setBackground(new Color(242, 242, 242));
-        plId.setBounds(180, 200, 420, 300); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
+        plId.setBounds(44, 100, 650, 400); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
 
         plSub.setLayout(null);
         plSub.setVisible(false); // 비활성화
         plSub.setBorder(new LineBorder(new Color(87, 87, 87), 3, true));
-        plSub.setBounds(90, 50, 246, 36); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
+        plSub.setBounds(275, 200, 250, 40); // 아이디 입력 필드 중앙 배치
 
         laId.setBounds(0, 2, 62, 32); // laId 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
         laId.setBorder(new LineBorder(new Color(87, 87, 87), 2, true));
         laId.setFont(ftSmall);
         laId.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
-        tfIdInput.setBounds(63, 3, 180, 30); // tfIdInput 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
+
+        tfIdInput.setBounds(65, 3, 185, 34);
         tfIdInput.setBackground(new Color(242, 242, 242, 255));
         tfIdInput.setFont(ftMedium);
+        btnId.setBounds(300, 300, 200, 80); // 아이디 확인 버튼 위치 조정
 
-        btnId.setBounds(120, 150, 180, 110); // btnId 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
-        btnId.setBorderPainted(false); // 버튼 테두리 제거
-
-        // plDrawRoom
         plDrawRoom.setLayout(null);
         plDrawRoom.setVisible(false); // 비활성화
-        plDrawRoom.setBounds(70, 120, 1005, 660);// plDrawRoom 위치, 크기 조정 좌표는 plMain 기준
+        plDrawRoom.setBounds(59, 105, 1005, 656);// plDrawRoom 위치, 크기 조정 좌표는 plMain 기준
 
-        // plDrawRoom - plTopMpId
         plTopMpId.setLayout(null);
         plTopMpId.setBackground(new Color(255, 255, 255, 255));
         plTopMpId.setBounds(0, 0, 750, 530);
 
-        // plDrawRoom - plTop
         plTop.setLayout(null);
         plTop.setBackground(new Color(255, 255, 255, 0));
         plTop.setBounds(0, 0, 750, 80); // plTop 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plMplId
         plMplId.setLayout(null);
         plMplId.setBackground(new Color(255, 255, 255, 255));
         plMplId.setBounds(0, 110, 750, 450); // plMplId 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plBottom
         plBottom.setLayout(null);
         plBottom.setBackground(new Color(242, 242, 242, 255));
         plBottom.setBounds(0, 530, 700, 130); // plBottom 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        iconBlackPen = ImageSetSize(iconBlackPen, 65, 130);
-        iconRedPen = ImageSetSize(iconRedPen, 65, 130);
-        iconOrangePen = ImageSetSize(iconOrangePen, 65, 130);
-        iconYellowPen = ImageSetSize(iconYellowPen, 65, 130);
-        iconGreenPen = ImageSetSize(iconGreenPen, 65, 130);
-        iconBluePen = ImageSetSize(iconBluePen, 65, 130);
-        iconIndigoPen = ImageSetSize(iconIndigoPen, 65, 130);
-        iconPurplePen = ImageSetSize(iconPurplePen, 65, 130);
+        iconBlackPen = new ImageIcon("img/drawBlackPen.png");
+        iconRedPen = new ImageIcon("img/drawRedPen.png");
+        iconOrangePen = new ImageIcon("img/drawOrangePen.png");
+        iconYellowPen = new ImageIcon("img/drawYellowPen.png");
+        iconGreenPen = new ImageIcon("img/drawGreenPen.png");
+        iconBluePen = new ImageIcon("img/drawBluePen.png");
+        iconIndigoPen = new ImageIcon("img/drawIndigoPen.png");
+        iconPurplePen = new ImageIcon("img/drawPurplePen.png");
 
         btnBlackDrawPen.setBackground(new Color(242, 242, 242, 255));
         btnBlackDrawPen.setBounds(0, 0, 65, 130);
@@ -380,25 +226,15 @@ public class CatchMindClient2 extends JFrame {
         btnPurpleDrawPen.setBounds(455, 0, 65, 130);
         btnPurpleDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
-        // plDrawRoom - plEast
         plEast.setLayout(null);
         plEast.setBounds(750, 0, 255, 530); // plEast 위치, 크기 조정 좌표는 plDrawRoom 기준
 
-        // plDrawRoom - plChat
         plChat.setLayout(null);
 
-        // plDrawRoom - btnPanel
         btnPanel.setLayout(null);
         btnPanel.setBackground(new Color(242, 242, 242, 255));
         btnPanel.setBounds(700, 530, 405, 130);
 
-        // plTop
-
-        // plMplId
-//		plDraw.setBackground(new Color(242, 242, 242, 255));
-//		plDraw.setBounds(0, 0, 750, 420); // plDraw 위치, 크기 조정 좌표는 plMplId 기준
-
-        // plBottom
         plPalette.setLayout(null);
         plPalette.setBackground(new Color(242, 242, 242, 255));
         plPalette.setBounds(0, 0, 520, 130); // plPalette 위치, 크기 조정 좌표는 plBottom 기준
@@ -449,12 +285,6 @@ public class CatchMindClient2 extends JFrame {
         btnReady.setBackground(new Color(242, 242, 242, 255));
         btnReady.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
 
-        btnSkip.setVisible(false);
-        btnSkip.setBounds(150, 2, 155, 65); // btnSkip 위치, 크기 조정 좌표는 plTop 기준
-        btnSkip.setFont(ftMedium);
-        btnSkip.setBackground(new Color(242, 242, 242, 255));
-        btnSkip.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
-
         btnExit.setBounds(150, 62, 155, 65); // btnExit 위치, 크기 조정 좌표는 plEast 기준
         btnExit.setFont(ftMedium);
         btnExit.setBackground(new Color(242, 242, 242, 255));
@@ -465,7 +295,25 @@ public class CatchMindClient2 extends JFrame {
         drawLabel.setBackground(new Color(255, 255, 255, 0));
         brush.setBounds(0, 0, 750, 450);
 
-        setSize(800, 640);
+
+        // 종료 버튼
+        btnEndGame = new JButton();
+        btnEndGame.setBounds(300, 400, 200, 60);
+        btnEndGame.setBorderPainted(false);
+        btnEndGame.setContentAreaFilled(false);
+        btnEndGame.setFocusPainted(false);
+
+        // 재시작 버튼
+        btnRestart = new JButton();
+        btnRestart.setBounds(300, 300, 200, 60);
+        btnRestart.setBorderPainted(false);
+        btnRestart.setContentAreaFilled(false);
+        btnRestart.setFocusPainted(false);
+
+        // 버튼 추가
+        plEndGame.add(btnRestart);
+        plEndGame.add(btnEndGame);
+        setSize(850, 600);
     }
 
     private void batch() {
@@ -489,8 +337,6 @@ public class CatchMindClient2 extends JFrame {
         plDrawRoom.add(plEast);
         plDrawRoom.add(btnPanel);
 
-//		plMplId.add(plDraw);
-
         plBottom.add(plPalette);
         plBottom.add(btnEraser);
         plBottom.add(btnDelete);
@@ -513,218 +359,286 @@ public class CatchMindClient2 extends JFrame {
         btnPanel.add(laQuiz);
         btnPanel.add(laQuizTitle);
         btnPanel.add(btnReady);
-        btnPanel.add(btnSkip);
         btnPanel.add(btnExit);
 
         // 드로우
         plMplId.add(drawLabel);
         plMplId.add(brush);
 
+        // 게임 종료 화면을 반드시 마지막에 추가
+        plMain.add(plEndGame);
+        plMain.setComponentZOrder(plEndGame, 0); // 최상위로 설정
     }
 
     private void listener() {
-        // Enter 입력시 채팅 메세지가 보내지는 이벤트.
-        tfChat.addActionListener(new ActionListener() {
+        tfChat.addActionListener(e -> sendChat());
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendChat();
+        btnStart.addActionListener(e -> {
+            plId.setVisible(true);
+            plSub.setVisible(true);
+            btnStart.setVisible(false);
+            btnId.setVisible(true);
+        });
+
+        btnId.addActionListener(e -> {
+            connectServer();
+            sendInsertId();
+        });
+
+        btnExit.addActionListener(e -> {
+            sendExit();
+            System.exit(0);
+        });
+
+        btnReady.addActionListener(e -> {
+            if (!btnReady.isEnabled()) {
+                return; // 버튼이 비활성화된 경우 동작하지 않음
+            }
+            isReady = !isReady; // 준비 상태 토글
+            btnReady.setFocusPainted(false); // 포커스 효과 제거
+            if (isReady) {
+                btnReady.setText("준비 취소"); // 텍스트 변경
+                btnReady.setBackground(new Color(107, 109, 109)); // 초록색으로 변경
+                btnReady.setForeground(Color.WHITE); // 텍스트 흰색
+                sendReady(); // 서버에 준비 상태 전송
+            } else {
+                btnReady.setText("준비"); // 텍스트 변경
+                btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색으로 변경
+                btnReady.setForeground(Color.BLACK); // 텍스트 검정색
+                sendReady(); // 서버에 준비 취소 상태 전송
             }
         });
 
-        // 이 이벤트로 plId이 활성화 되어서 아이디를 입력할 수 있음.
-        btnStart.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JButton btnStart = (JButton) e.getSource();
-                plId.setVisible(true); // plId 활성화
-                plSub.setVisible(true); // plId 활성화
-                btnStart.setVisible(false); // btnStart 비활성화
-            }
-        });
-
-        // 이 이벤트로 plDrawRoom이 활성화 되어서 그리기방에 입장함.
-        btnId.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // JButton btnId = (JButton)e.getSource();
-                connectServer(); // 서버와 연결
-                sendInsertId();
-            }
-        });
-
-        // 나가기 버튼 이벤트.
-        btnExit.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendExit();
-                System.exit(0);
-            }
-        });
-
-        // 준비 버튼 이벤트.
-        btnReady.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendReady();
-            }
-        });
-
-        // 넘기기 버튼 이벤트.
-        btnSkip.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendSkip();
-            }
-        });
-        // 마우스를 눌렀을때 그리는 이벤트
-
-        drawLabel.addMouseMotionListener(new MouseMotionListener() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-
+        drawLabel.addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (drawPPAP == true) {
-                    System.out.println("ppap true 실행 됨");
+                if (ReaderThread.drawPPAP) {
                     sendDraw = "DRAW&" + e.getX() + "," + e.getY();
-                    brush.xx = e.getX();
-                    brush.yy = e.getY();
+                    brush.setX(e.getX());
+                    brush.setY(e.getY());
                     brush.repaint();
                     brush.printAll(imgBuff.getGraphics());
                     writer.println(sendDraw);
-                } else {
-                    System.out.println("ppap false 실행 됨");
                 }
             }
         });
 
-        // 검은색 펜 이벤트
-        btnBlackDrawPen.addActionListener(new ActionListener() {
+        btnBlackDrawPen.addActionListener(e -> changePenColor("Black", Color.BLACK));
+        btnRedDrawPen.addActionListener(e -> changePenColor("Red", Color.RED));
+        btnOrangeDrawPen.addActionListener(e -> changePenColor("Orange", Color.ORANGE));
+        btnYellowDrawPen.addActionListener(e -> changePenColor("Yellow", Color.YELLOW));
+        btnGreenDrawPen.addActionListener(e -> changePenColor("Green", Color.GREEN));
+        btnBlueDrawPen.addActionListener(e -> changePenColor("Blue", Color.CYAN));
+        btnIndigoDrawPen.addActionListener(e -> changePenColor("Indigo", Color.BLUE));
+        btnPurpleDrawPen.addActionListener(e -> changePenColor("Purple", Color.PINK));
+        btnEraser.addActionListener(e -> changePenColor("White", Color.WHITE));
+
+        btnDelete.addActionListener(e -> {
+            sendColor = "COLOR&Delete";
+            writer.println(sendColor);
+            brush.setClearC(false);
+            cleanDraw();
+        });
+
+        btnEndGame.addActionListener(e -> System.exit(0)); // 게임 종료 버튼
+        btnRestart.addActionListener(e -> restartGame());  // 재시작 버튼
+    }
+
+    // 게임 종료 화면 표시
+    public void showEndGameScreen(String scores) {
+        System.out.println("Showing End Game Screen...");
+
+        // 종료 화면 활성화
+        plDrawRoom.setVisible(false); // 게임 화면 비활성화
+        plId.setVisible(false);       // ID 입력 화면 비활성화
+
+        // 종료 화면 패널 크기 설정
+        plEndGame.setBounds(60, 100, 970, 700);
+        plEndGame.setVisible(true);
+
+        // 점수 데이터 처리
+        String[] scoreLines = scores.split("&");
+        java.util.List<String[]> scoreList = new java.util.ArrayList<>();
+        for (String line : scoreLines) {
+            String[] parts = line.split(":"); // "아이디:점수" 형식
+            if (parts.length == 2) {
+                scoreList.add(parts);
+            }
+        }
+
+        // 점수 내림차순 정렬
+        scoreList.sort((a, b) -> Integer.parseInt(b[1].trim()) - Integer.parseInt(a[1].trim()));
+
+        // 점수 표시 영역 초기화
+        int startX = 300; // 시작 X 좌표
+        int startY = 100;  // 시작 Y 좌표
+        int rowHeight = 40; // 각 행의 높이
+
+        JLabel titleLabel = new JLabel("랭킹");
+        titleLabel.setBounds(startX, startY, 100, rowHeight);
+        titleLabel.setFont(new Font("맑은 고딕", Font.BOLD, 28));
+        plEndGame.add(titleLabel);
+
+        JLabel idLabel = new JLabel("아이디");
+        idLabel.setBounds(startX + 120, startY, 200, rowHeight);
+        idLabel.setFont(new Font("맑은 고딕", Font.BOLD, 28));
+        plEndGame.add(idLabel);
+
+        JLabel scoreLabel = new JLabel("점수");
+        scoreLabel.setBounds(startX + 340, startY, 100, rowHeight);
+        scoreLabel.setFont(new Font("맑은 고딕", Font.BOLD, 28));
+        plEndGame.add(scoreLabel);
+
+        // 점수 표시
+        int rank = 1;
+        for (String[] entry : scoreList) {
+            String playerId = entry[0].trim();
+            String playerScore = entry[1].trim();
+
+            JLabel rankLabel = new JLabel(rank + "");
+            rankLabel.setBounds(startX, startY + rank * rowHeight, 100, rowHeight);
+            rankLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 24));
+            plEndGame.add(rankLabel);
+
+            JLabel playerIdLabel = new JLabel(playerId);
+            playerIdLabel.setBounds(startX + 120, startY + rank * rowHeight, 200, rowHeight);
+            playerIdLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 24));
+            plEndGame.add(playerIdLabel);
+
+            JLabel playerScoreLabel = new JLabel(playerScore);
+            playerScoreLabel.setBounds(startX + 340, startY + rank * rowHeight, 100, rowHeight);
+            playerScoreLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 24));
+            plEndGame.add(playerScoreLabel);
+
+            rank++;
+        }
+
+        // 버튼 공통 크기 및 스타일 설정
+        int buttonWidth = 300;
+        int buttonHeight = 80;
+        int buttonY = 400;
+        Font buttonFont = new Font("맑은 고딕", Font.BOLD, 22);
+
+        // 재시작 버튼
+        btnRestart.setText("재시작");
+        btnRestart.setBounds(200, buttonY, buttonWidth, buttonHeight); // 왼쪽 버튼 위치
+        btnRestart.setFont(buttonFont);
+        btnRestart.setBackground(Color.WHITE); // 기본 흰색 배경
+        btnRestart.setForeground(Color.BLACK); // 기본 검정 텍스트
+        btnRestart.setFocusPainted(false);
+        btnRestart.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+        // hover 효과 (재시작 버튼)
+        btnRestart.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent evt) {
+                btnRestart.setBackground(new Color(87, 255, 87)); // 초록색 배경
+                btnRestart.setForeground(Color.WHITE); // 흰색 글자
+            }
 
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Black";
-                brush.setColor(Color.BLACK);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
+            public void mouseExited(MouseEvent evt) {
+                btnRestart.setBackground(Color.WHITE); // 기본 흰색 배경
+                btnRestart.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
         });
-        // 빨간색 펜 이벤트
-        btnRedDrawPen.addActionListener(new ActionListener() {
+
+        plEndGame.add(btnRestart);
+
+        // 종료 버튼
+        btnEndGame.setText("게임 종료");
+        btnEndGame.setBounds(500, buttonY, buttonWidth, buttonHeight); // 오른쪽 버튼 위치
+        btnEndGame.setFont(buttonFont);
+        btnEndGame.setBackground(Color.WHITE); // 기본 흰색 배경
+        btnEndGame.setForeground(Color.BLACK); // 기본 검정 텍스트
+        btnEndGame.setFocusPainted(false);
+        btnEndGame.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+        // hover 효과 (종료 버튼)
+        btnEndGame.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent evt) {
+                btnEndGame.setBackground(new Color(255, 87, 87)); // 빨간색 배경
+                btnEndGame.setForeground(Color.WHITE); // 흰색 글자
+            }
 
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Red";
-                brush.setColor(Color.RED);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
+            public void mouseExited(MouseEvent evt) {
+                btnEndGame.setBackground(Color.WHITE); // 기본 흰색 배경
+                btnEndGame.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
         });
-        // 오렌지색 펜 이벤트
-        btnOrangeDrawPen.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Orange";
-                brush.setColor(Color.ORANGE);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 노란색 펜 이벤트
-        btnYellowDrawPen.addActionListener(new ActionListener() {
+        plEndGame.add(btnEndGame);
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Yellow";
-                brush.setColor(Color.YELLOW);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 초록색 펜 이벤트
-        btnGreenDrawPen.addActionListener(new ActionListener() {
+        // 버튼 리스너
+        btnEndGame.addActionListener(e -> System.exit(0));
+        btnRestart.addActionListener(e -> restartGame());
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Green";
-                brush.setColor(Color.GREEN);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 하늘색 펜 이벤트
-        btnBlueDrawPen.addActionListener(new ActionListener() {
+        // 갱신
+        plMain.revalidate();
+        plMain.repaint();
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Blue";
-                brush.setColor(Color.CYAN);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 파란색 펜 이벤트
-        btnIndigoDrawPen.addActionListener(new ActionListener() {
+        // 준비 버튼 초기화
+        btnReady.setEnabled(true);
+        btnReady.setText("준비");
+        btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색
+        btnReady.setForeground(Color.BLACK); // 기본 텍스트 색상
+        isReady = false;
+    }
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Indigo";
-                brush.setColor(Color.BLUE);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 핑크색 펜 이벤트
-        btnPurpleDrawPen.addActionListener(new ActionListener() {
+    // 재시작 메서드
+    private void restartGame() {
+        plEndGame.setVisible(false); // 종료 화면 숨김
+        plId.setVisible(false);       // 초기화면 활성화
+        btnId.setVisible(false);
+        btnStart.setVisible(true);   // 시작 버튼 활성화
+        plDrawRoom.setVisible(false); // 그리기 방 비활성화
+        resetGameState();            // 게임 상태 초기화
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "Purple";
-                brush.setColor(Color.PINK);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 지우개(흰색) 이벤트
-        btnEraser.addActionListener(new ActionListener() {
+        // **plEndGame 초기화**
+        clearEndGameScreen();
+    }
+    // plEndGame 초기화 메서드
+    private void clearEndGameScreen() {
+        // plEndGame에 추가된 모든 컴포넌트 제거
+        plEndGame.removeAll();
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sendColor = "COLOR&" + "White";
-                brush.setColor(Color.WHITE);
-                writer.println(sendColor);
-                System.out.println("색 변경 : " + sendColor);
-            }
-        });
-        // 드로우 캔버스 초기화 이벤트
-        btnDelete.addActionListener(new ActionListener() {
+        // 기본 종료 버튼과 재시작 버튼 다시 추가
+        plEndGame.add(btnRestart);
+        plEndGame.add(btnEndGame);
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("delete 버튼 눌러짐");
-                sendColor = "COLOR&" + "Delete";
-                writer.println(sendColor);
-                brush.setClearC(false);
-                cleanDraw();
-                System.out.println("드로우 캔버스 초기화");
-            }
-        });
+        // 갱신
+        plEndGame.revalidate();
+        plEndGame.repaint();
+    }
+
+    // 게임 상태 초기화
+    private void resetGameState() {
+        setSize(850, 600);
+        brush.setClearC(true);
+        cleanDraw(); // 캔버스 초기화
+        tfIdInput.setText(""); // 아이디 입력 필드 초기화
+        taChat.setText(""); // 채팅 창 초기화
+        taUserList.setText(""); // 유저 리스트 초기화
+        drawPPAP = false; // 그림 그리기 비활성화
+        isReady= false;
+        readerThread.setIDString("");
+    }
+
+    private void changePenColor(String colorName, Color color) {
+        sendColor = "COLOR&" + colorName;
+        brush.setColor(color);
+        writer.println(sendColor);
     }
 
     // 접속 시 서버 연결 메서드.
     private void connectServer() {
         try {
             socket = new Socket("localhost", 3000);
-            ReaderThread rt = new ReaderThread();
-            rt.start();
+            readerThread = new ReaderThread(socket, brush, taChat, taUserList, scrChat, laQuiz, btnReady, plBottom, tfChat, imgBuff, this, IDString);
+            readerThread.start();
+
         } catch (Exception e) {
             System.out.println(TAG + "서버 연결 실패");
         }
@@ -737,16 +651,6 @@ public class CatchMindClient2 extends JFrame {
             writer.println("EXIT&" + IDString);
         } catch (Exception e) {
             System.out.println(TAG + "Exit Msg writer fail...");
-        }
-    }
-
-    // SKIP 프로토콜 메서드.
-    private void sendSkip() {
-        try {
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            writer.println("SKIP&");
-        } catch (Exception e) {
-            System.out.println(TAG + "Skip Msg writer fail...");
         }
     }
 
@@ -778,21 +682,24 @@ public class CatchMindClient2 extends JFrame {
         try {
             writer = new PrintWriter(socket.getOutputStream(), true);
             IDString = tfIdInput.getText();
-            if ((IDString.equals(""))) { // NULL값 입력시
-                IDString = "emptyID";
-                writer.println("ID&" + IDString);
+            System.out.println("IDString = " + IDString);
+            if ((IDString.equals(""))) {
+                IDString = "user" + (int)(Math.random() * 10000); // 랜덤한 더미값 생성
                 plId.setVisible(false); // plId 비활성화
                 plSub.setVisible(false); // plId 활성화
                 plDrawRoom.setVisible(true); // plDrawRoom 활성화
-                setSize(1152, 864);
-            } else { // 아이디 값 입력시.
-                writer.println("ID&" + IDString);
+                setSize(1100, 800);
+            } else { // 아이디 존재
+                //writer.println("ID&" + IDString);
                 tfIdInput.setText("");
                 plId.setVisible(false); // plId 비활성화
                 plSub.setVisible(false); // plId 활성화
                 plDrawRoom.setVisible(true); // plDrawRoom 활성화
-                setSize(1152, 864);
+                setSize(1100, 800);
             }
+            readerThread.setIDString(IDString);
+            writer.println("ID&" + IDString);
+
 
         } catch (IOException e) {
             System.out.println(TAG + "준비 메세지 요청 실패");
@@ -804,171 +711,6 @@ public class CatchMindClient2 extends JFrame {
         brush.setClearC(false);
         brush.repaint();
         brush.printAll(imgBuff.getGraphics());
-    }
-
-    // 서버로 부터 메세지를 받아 TextArea에 뿌려주는 Thread.
-    class ReaderThread extends Thread {
-        private BufferedReader reader;
-
-        @Override
-        public void run() {
-            try {
-                reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                String readerMsg = null;
-                String[] parsReaderMsg;
-                while ((readerMsg = reader.readLine()) != null) {
-                    parsReaderMsg = readerMsg.split("&");
-                    if (parsReaderMsg[0].equals("DRAW")) {
-                        String[] drawM = parsReaderMsg[1].split(",");
-                        x = Integer.parseInt(drawM[0]);
-                        y = Integer.parseInt(drawM[1]);
-                        brush.setX(x);
-                        brush.setY(y);
-                        brush.repaint();
-                        brush.printAll(imgBuff.getGraphics());
-                        System.out.println("브러쉬 값 : " + drawM);
-                        System.out.println("브러쉬 값 : " + x);
-                        System.out.println("브러쉬 값 : " + y);
-                    } else if (parsReaderMsg[0].equals("COLOR")) {
-                        System.out.println("색 변경 요청 들어옴");
-                        if (parsReaderMsg[1].equals("Black")) {
-                            System.out.println("검은색 요청");
-                            brush.setColor(Color.BLACK);
-                        } else if (parsReaderMsg[1].equals("Red")) {
-                            System.out.println("빨간색 요청");
-                            brush.setColor(Color.RED);
-                        } else if (parsReaderMsg[1].equals("Orange")) {
-                            System.out.println("주황색 요청");
-                            brush.setColor(Color.ORANGE);
-                        } else if (parsReaderMsg[1].equals("Yellow")) {
-                            System.out.println("노랑색 요청");
-                            brush.setColor(Color.YELLOW);
-                        } else if (parsReaderMsg[1].equals("Green")) {
-                            System.out.println("초록색 요청");
-                            brush.setColor(Color.GREEN);
-                        } else if (parsReaderMsg[1].equals("Blue")) {
-                            System.out.println("파랑색 요청");
-                            brush.setColor(Color.CYAN);
-                        } else if (parsReaderMsg[1].equals("Indigo")) {
-                            System.out.println("인디고 위졋고 휘졋고 오졋고 요청");
-                            brush.setColor(Color.BLUE);
-                        } else if (parsReaderMsg[1].equals("Purple")) {
-                            System.out.println("퍼플같은 핑크 요청");
-                            brush.setColor(Color.PINK);
-                        } else if (parsReaderMsg[1].equals("White")) {
-                            System.out.println("지우개 요청");
-                            brush.setColor(Color.WHITE);
-                        } else if (parsReaderMsg[1].equals("Delete")) {
-                            System.out.println("화면 리셋 요청");
-                            brush.setClearC(false);
-                            brush.repaint();
-                            brush.printAll(imgBuff.getGraphics());
-                        }
-                    } else if (parsReaderMsg[0].equals("SERVER")) {
-                        taChat.append("[SERVER]: " + parsReaderMsg[1] + "\n");
-                    } else if (parsReaderMsg[0].equals("CHAT") && parsReaderMsg.length > 1) {
-                        taChat.append(parsReaderMsg[1] + "\n");
-                    } else if (parsReaderMsg[0].equals("START")) {
-                        btnReady.setVisible(false);
-
-                    } else if (parsReaderMsg[0].equals("ID")) {
-                        taUserList.setText("");
-                    } else if (parsReaderMsg[0].equals("IDLIST")) {
-                        taUserList.append(parsReaderMsg[1] + "\n");
-                    } else if (parsReaderMsg[0].equals("TURN")) {
-                        laQuiz.setText(problem[selectProblem]);
-                        laQuiz.setVisible(true);
-                        btnSkip.setVisible(true);
-                        drawPPAP = true;
-                        tfChat.setEnabled(false);
-                        plBottom.setVisible(true);
-                        System.out.println("내 턴 임");
-                    } else if (parsReaderMsg[0].equals("NOTTURN")) {
-                        laQuiz.setVisible(false);
-                        btnSkip.setVisible(false);
-                        System.out.println("내 턴 아님");
-                        brush.setDrawPen(false);
-                        drawPPAP = false;
-                        tfChat.setEnabled(true);
-                        plBottom.setVisible(false);
-                        System.out.println(drawPPAP);
-                    } else if (parsReaderMsg[0].equals("ANSWER")) {
-                        selectProblem++;
-                        if (selectProblem >= problem.length) {
-                            selectProblem = 0;
-                        }
-                    } else if (parsReaderMsg[0].equals("END")) {
-                        taChat.append("[SERVER]: " + parsReaderMsg[1] + "\n");
-                        btnReady.setVisible(true);
-                        tfChat.setEnabled(true);
-                        plBottom.setVisible(true);
-                        btnSkip.setVisible(false);
-                        btnReady.setVisible(true);
-                        laQuiz.setVisible(false);
-                        drawPPAP = true;
-                    }
-                    else {
-                        taChat.append("\n");
-                    }
-                    // 스크롤을 밑으로 고정.
-                    scrChat.getVerticalScrollBar().setValue(scrChat.getVerticalScrollBar().getMaximum());
-                }
-            } catch (IOException e) {
-                System.out.println(TAG + "통신 실패");
-            }
-        }
-    }
-
-    // 그리기 위한 펜을 만들어 주는 클래스
-    class Brush extends JLabel {
-        public int xx, yy;
-        public Color color = Color.BLACK;
-        public boolean drawPen = true;
-        public boolean clearC = true;
-
-        @Override
-        public void paint(Graphics g) {
-            if (drawPen == true) {
-                g.setColor(color);
-                g.fillOval(xx - 10, yy - 10, 10, 10);
-                System.out.println(drawPPAP);
-            } else if (drawPen == false) {
-                g.setColor(Color.WHITE);
-                g.fillOval(0, 0, 0, 0);
-                System.out.println(drawPPAP);
-                System.out.println("브러쉬 사용 못 하게 막음");
-            }
-            if (clearC == true) {
-                g.setColor(color);
-                g.fillOval(xx - 10, yy - 10, 10, 10);
-            } else if (clearC == false) {
-                g.setColor(Color.WHITE);
-                g.fillRect(0, 0, 1000, 1000);
-                clearC = true;
-                System.out.println("캔버스 클리어 실행됨");
-            }
-
-        }
-
-        public void setX(int x) {
-            this.xx = x;
-        }
-
-        public void setY(int y) {
-            this.yy = y;
-        }
-
-        public void setColor(Color color) {
-            this.color = color;
-        }
-
-        public void setDrawPen(boolean drawPen) {
-            this.drawPen = drawPen;
-        }
-
-        public void setClearC(boolean clearC) {
-            this.clearC = clearC;
-        }
     }
 
     public static void main(String[] args) {

@@ -5,12 +5,16 @@ import client.components.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient extends JFrame implements EndGameHandler{
+public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private static final String TAG = "GameStart :";
     private String IDString;
 
@@ -44,13 +48,12 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
     private BufferedImage imgBuff;
     private JLabel drawLabel;
     private Brush brush;
-    private ImageIcon endGameBg, endGameBtnIcon, restartBtnIcon;
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
     ReaderThread readerThread;
     private boolean isReady = false; // 버튼 상태를 저장하는 변수 (false: 준비 안 됨, true: 준비됨)
 
-    public CatchMindClient() {
+    public CatchMindClient1() {
         init();
         setting();
         batch();
@@ -149,7 +152,6 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         plSub.setLayout(null);
         plSub.setVisible(false); // 비활성화
         plSub.setBorder(new LineBorder(new Color(87, 87, 87), 3, true));
-        //plSub.setBounds(90, 50, 246, 36); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
         plSub.setBounds(275, 200, 250, 40); // 아이디 입력 필드 중앙 배치
 
         laId.setBounds(0, 2, 62, 32); // laId 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
@@ -295,14 +297,14 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
 
 
         // 종료 버튼
-        btnEndGame = new JButton(endGameBtnIcon);
+        btnEndGame = new JButton();
         btnEndGame.setBounds(300, 400, 200, 60);
         btnEndGame.setBorderPainted(false);
         btnEndGame.setContentAreaFilled(false);
         btnEndGame.setFocusPainted(false);
 
         // 재시작 버튼
-        btnRestart = new JButton(restartBtnIcon);
+        btnRestart = new JButton();
         btnRestart.setBounds(300, 300, 200, 60);
         btnRestart.setBorderPainted(false);
         btnRestart.setContentAreaFilled(false);
@@ -527,15 +529,15 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         btnRestart.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         // hover 효과 (재시작 버튼)
-        btnRestart.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnRestart.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 btnRestart.setBackground(new Color(87, 255, 87)); // 초록색 배경
                 btnRestart.setForeground(Color.WHITE); // 흰색 글자
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 btnRestart.setBackground(Color.WHITE); // 기본 흰색 배경
                 btnRestart.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
@@ -553,15 +555,15 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         btnEndGame.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         // hover 효과 (종료 버튼)
-        btnEndGame.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnEndGame.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
+            public void mouseEntered(MouseEvent evt) {
                 btnEndGame.setBackground(new Color(255, 87, 87)); // 빨간색 배경
                 btnEndGame.setForeground(Color.WHITE); // 흰색 글자
             }
 
             @Override
-            public void mouseExited(java.awt.event.MouseEvent evt) {
+            public void mouseExited(MouseEvent evt) {
                 btnEndGame.setBackground(Color.WHITE); // 기본 흰색 배경
                 btnEndGame.setForeground(Color.BLACK); // 기본 검정 텍스트
             }
@@ -652,16 +654,6 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
         }
     }
 
-    // SKIP 프로토콜 메서드.
-    private void sendSkip() {
-        try {
-            writer = new PrintWriter(socket.getOutputStream(), true);
-            writer.println("SKIP&");
-        } catch (Exception e) {
-            System.out.println(TAG + "Skip Msg writer fail...");
-        }
-    }
-
     // READY 프로토콜 메서드.
     private void sendReady() {
         try {
@@ -722,6 +714,6 @@ public class CatchMindClient extends JFrame implements EndGameHandler{
     }
 
     public static void main(String[] args) {
-        new CatchMindClient();
+        new CatchMindClient1();
     }
 }

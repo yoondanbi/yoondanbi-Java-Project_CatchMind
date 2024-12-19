@@ -1,25 +1,30 @@
 package server;
 
+import manager.ProblemManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 public class CatchMindServer {
     private static final String LOG_TAG = "CatchMindServer: ";
-    private Vector<ClientHandler> connectedClients;
+    private static final int PORT = 3000;
+    public static List<ClientHandler> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private ServerSocket server;
-
     private int readyCount = 0;
     private boolean gameStarted = false;
     private int currentWordIndex = 0;
 
     public CatchMindServer() {
         try {
-            server = new ServerSocket(3000);
+            server = new ServerSocket(PORT);
             connectedClients = new Vector<>();
             while (true) {
                 System.out.println("Waiting for client connections...");
@@ -33,24 +38,16 @@ public class CatchMindServer {
             System.out.println(LOG_TAG + "Server connection failed.");
         }
     }
-
-    public static void main(String[] args) {
-        new CatchMindServer();
-    }
-
     class ClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter output;
         private BufferedReader input;
-
         private boolean ready = false;
         private boolean gameEnded = false;
         private boolean answeredCorrectly = false;
         private int turnIndex = 0;
         private int currentTurn = 1;
-
         private String clientID;
-        private String[] wordPool =  { "상어", "과제", "시험", "자바", "프로젝트" };
         private int score = 0;
 
         public ClientHandler(Socket clientSocket) {
@@ -129,52 +126,48 @@ public class CatchMindServer {
 
         private void sendClientList() {
             for (ClientHandler client : connectedClients) {
-                for (ClientHandler otherClient : connectedClients) {
-                    client.output.println("IDLIST&[" + otherClient.clientID + "]");
-                }
+                String clientInfo = "IDLIST&" + client.clientID + ":" + client.score;
+                client.output.println(clientInfo);
             }
         }
 
         private void processChat(String[] parsedMessage) {
             if (parsedMessage.length > 1) {
                 String chatMessage = parsedMessage[1];
-                System.out.println("chatMessage = " + chatMessage);
                 broadcastMessage("CHAT", "[" + clientID + "]: " + chatMessage);
                 checkAnswer(chatMessage); // 채팅 메시지를 정답 체크 메서드로 전달
-
-                // 디버깅 로그
-                System.out.println("Current Turn: " + currentTurn);
-                System.out.println("Current Word Index: " + currentWordIndex);
-                System.out.println("Game Started: " + gameStarted);
             }
         }
 
-
         private void checkAnswer(String answer) {
-            System.out.println("gameStarted = " + gameStarted);
-            System.out.println("Checking answer: " + answer);
-            System.out.println("Expected word: " + wordPool[currentWordIndex]);
-            System.out.println("Current turn: " + currentTurn);
-            if (gameStarted && answer.equals(wordPool[currentWordIndex])) {
-                System.out.println("answer = " + answer);
-                broadcastMessage("SERVER", "[" + clientID + "] guessed the word correctly: [" + wordPool[currentWordIndex] + "]");
+            String currentWord = ProblemManager.getProblem(currentWordIndex);
+            if (gameStarted && answer.equals(currentWord)) {
+                broadcastMessage("SERVER", "[" + clientID + "] guessed the word correctly: [" + currentWord + "]");
                 increaseScore();
-                moveToNextWord();
                 // 모든 클라이언트에게 정답 처리 완료 알림
                 for (ClientHandler client : connectedClients) {
-                    client.output.println("ANSWER&" + wordPool[currentWordIndex]);
+                    client.output.println("ANSWER&" + currentWord);
                 }
+               // score++; // 정답 맞춘 클라이언트의 점수 증가
+                broadcastMessage("SERVER", "[" + clientID + "] 점수: " + score);
 
+                assignNextTurnToCorrectAnswerer(this); // 정답자에게 다음 턴 권한
+                moveToNextWord();
                 // 다음 턴으로 이동
                 answeredCorrectly = true;  // 상태 업데이트
                 processTurn();
             }
+        }
+        private void assignNextTurnToCorrectAnswerer(ClientHandler correctClient) {
+            // 정답을 맞춘 클라이언트를 다음 턴으로 설정
+            currentTurn = correctClient.turnIndex;
         }
 
         private void increaseScore() {
             for (ClientHandler client : connectedClients) {
                 if (client.clientID.equals(clientID)) {
                     client.score++;
+                    sendClientList(); // 점수 변경 후 업데이트
                     client.output.println("SERVER&Your current score: " + client.score);
                     break;
                 }
@@ -183,21 +176,17 @@ public class CatchMindServer {
 
         private void moveToNextWord() {
             currentWordIndex++;
-            if (currentWordIndex >= wordPool.length) {
+            if (currentWordIndex >= ProblemManager.getProblemCount()) {
                 currentWordIndex = 0; // 제시어 순환
             }
 
-            if (currentTurn > connectedClients.size()) {
-                currentTurn = 1; // 턴 초기화
-            }
-
             // 게임 종료 조건
-            if (connectedClients.size() < 2) {
+            if (connectedClients.size() < 2 || currentWordIndex==0) {
                 gameEnded = true;
+                System.out.println("endGame1");
                 endGame();
             }
         }
-
 
         private void toggleReadyStatus() {
             ready = !ready; // 준비 상태 토글
@@ -215,39 +204,36 @@ public class CatchMindServer {
             }
         }
 
-
         private void startGame() {
             if (readyCount == connectedClients.size() && !gameStarted) {
                 System.out.println("StartGame!! = " + clientSocket);
                 gameStarted = true; // 게임 시작 상태 업데이트
                 broadcastMessage("SERVER", "Game is starting!");
+                // 모든 클라이언트에게 "START" 메시지 전송
+                for (ClientHandler client : connectedClients) {
+                    client.output.println("START&");
+                }
+
                 processTurn(); // 첫 턴 시작
             }
         }
 
-
         private void processTurn() {
             if (gameStarted) { // answeredCorrectly 제거: 첫 턴도 처리해야 하기 때문
                 for (ClientHandler client : connectedClients) {
-                    client.output.println("NOTTURN&"); // 모두에게 NOTTURN 전송
-                }
-                for (ClientHandler client : connectedClients) {
                     if (client.turnIndex == currentTurn) { // 현재 턴의 클라이언트 찾기
-                        client.output.println("TURN&" + wordPool[currentWordIndex]); // TURN과 제시어 전송
+                        String currentWord = ProblemManager.getProblem(currentWordIndex);
+                        client.output.println("TURN&" + currentWord); // TURN과 제시어 전송
                         broadcastMessage("SERVER", "[" + client.clientID + "] is taking their turn.");
-                        System.out.println("Current Word: " + wordPool[currentWordIndex]); // 디버깅용 로그
+                        //break;
+                    }else{
+                        client.output.println("NOTTURN&"); // NOTTURN 전송
                     }
                 }
-                currentTurn++; // 턴을 다음 클라이언트로 이동
-                if (currentTurn > connectedClients.size()) {
-                    currentTurn = 1; // 턴이 마지막 클라이언트를 넘어가면 초기화
-                }
-
                 // 상태 초기화
                 answeredCorrectly = false;
             }
         }
-
 
         private void forwardDrawing(String[] parsedMessage) {
             for (ClientHandler client : connectedClients) {
@@ -284,16 +270,39 @@ public class CatchMindServer {
         }
 
 
+        private String generateScoreBoard() {
+            StringBuilder scoreBoard = new StringBuilder();
+            for (ClientHandler client : connectedClients) {
+                scoreBoard.append(client.clientID)
+                        .append(": ")
+                        .append(client.score)
+                        .append("\n");
+            }
+            return scoreBoard.toString();
+        }
 
         private void endGame() {
-            broadcastMessage("SERVER", "Game over! Displaying results...");
+            System.out.println("endGame2");
+            String scoreBoard = generateScoreBoard();
+
+            // 모든 클라이언트에 게임 종료 메시지 전송
             for (ClientHandler client : connectedClients) {
-                client.output.println("END&Final Scores:");
-                for (ClientHandler otherClient : connectedClients) {
-                    client.output.println("END&[" + otherClient.clientID + "] Score: " + otherClient.score);
+                client.output.println("END&" + scoreBoard.replace("\n", "&"));
+                try {
+                    client.clientSocket.close(); // 클라이언트 소켓 닫기
+                } catch (IOException e) {
+                    System.out.println(LOG_TAG + "Error closing client socket: " + e.getMessage());
                 }
+            }
+            for (ClientHandler client : connectedClients) {
                 client.resetGameState();
             }
+
+            // 클라이언트 리스트 비우기
+            connectedClients.clear();
+
+            // 서버 상태 초기화
+            resetGameState();
         }
 
         private void resetGameState() {
@@ -305,5 +314,9 @@ public class CatchMindServer {
             currentTurn = 1;
             score = 0;
         }
+    }
+
+    public static void main(String[] args) {
+        new CatchMindServer();
     }
 }
