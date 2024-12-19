@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
-
 public class CatchMindServer {
     private static final String LOG_TAG = "CatchMindServer: ";
     private static final int PORT = 3000;

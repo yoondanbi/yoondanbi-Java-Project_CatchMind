@@ -48,7 +48,6 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private BufferedImage imgBuff;
     private JLabel drawLabel;
     private Brush brush;
-    private ImageIcon endGameBg, endGameBtnIcon, restartBtnIcon;
     String sendDraw, sendColor;
     public static boolean drawPPAP = true;
     ReaderThread readerThread;
@@ -153,7 +152,6 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plSub.setLayout(null);
         plSub.setVisible(false); // 비활성화
         plSub.setBorder(new LineBorder(new Color(87, 87, 87), 3, true));
-        //plSub.setBounds(90, 50, 246, 36); // plId 위치, 크기 조정 (x, y, width, height) 좌표는 plMain 기준
         plSub.setBounds(275, 200, 250, 40); // 아이디 입력 필드 중앙 배치
 
         laId.setBounds(0, 2, 62, 32); // laId 위치, 크기 조정 (x, y, width, height) 좌표는 plId 기준
@@ -299,14 +297,14 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
 
         // 종료 버튼
-        btnEndGame = new JButton(endGameBtnIcon);
+        btnEndGame = new JButton();
         btnEndGame.setBounds(300, 400, 200, 60);
         btnEndGame.setBorderPainted(false);
         btnEndGame.setContentAreaFilled(false);
         btnEndGame.setFocusPainted(false);
 
         // 재시작 버튼
-        btnRestart = new JButton(restartBtnIcon);
+        btnRestart = new JButton();
         btnRestart.setBounds(300, 300, 200, 60);
         btnRestart.setBorderPainted(false);
         btnRestart.setContentAreaFilled(false);
