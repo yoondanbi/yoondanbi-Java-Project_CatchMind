@@ -185,6 +185,7 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         plBottom.setBackground(new Color(242, 242, 242, 255));
         plBottom.setBounds(0, 530, 700, 130); // plBottom 위치, 크기 조정 좌표는 plDrawRoom 기준
 
+        //팔레트&지우개&휴지통 관련...
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
         iconRedPen = new ImageIcon("img/drawRedPen.png");
         iconOrangePen = new ImageIcon("img/drawOrangePen.png");
@@ -195,36 +196,33 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         iconPurplePen = new ImageIcon("img/drawPurplePen.png");
 
         btnBlackDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnBlackDrawPen.setBounds(0, 0, 65, 130);
         btnBlackDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnRedDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnRedDrawPen.setBounds(65, 0, 65, 130);
         btnRedDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnOrangeDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnOrangeDrawPen.setBounds(130, 0, 65, 130);
         btnOrangeDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnYellowDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnYellowDrawPen.setBounds(195, 0, 65, 130);
         btnYellowDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnGreenDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnGreenDrawPen.setBounds(260, 0, 65, 130);
         btnGreenDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnBlueDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnBlueDrawPen.setBounds(325, 0, 65, 130);
         btnBlueDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnIndigoDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnIndigoDrawPen.setBounds(390, 0, 65, 130);
         btnIndigoDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnPurpleDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnPurpleDrawPen.setBounds(455, 0, 65, 130);
         btnPurpleDrawPen.setBorderPainted(false); // 버튼 테두리 제거
+
+        btnEraser.setBackground(new Color(242, 242, 242, 255)); //지우개 버튼
+
+        btnDelete.setBackground(new Color(242, 242, 242, 255)); //휴지통 버튼
+        //end of 팔레트&지우개&휴지통 관련...
 
         plEast.setLayout(null);
         plEast.setBounds(750, 0, 255, 530); // plEast 위치, 크기 조정 좌표는 plDrawRoom 기준
@@ -235,15 +233,10 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         btnPanel.setBackground(new Color(242, 242, 242, 255));
         btnPanel.setBounds(700, 530, 405, 130);
 
-        plPalette.setLayout(null);
-        plPalette.setBackground(new Color(242, 242, 242, 255));
+        //크레용과 지우개, 휴지통을 담는 팔레트
+        plPalette.setLayout(new GridLayout(1,10));
+        plPalette.setBackground(Color.RED);
         plPalette.setBounds(0, 0, 520, 130); // plPalette 위치, 크기 조정 좌표는 plBottom 기준
-
-        btnEraser.setBackground(new Color(242, 242, 242, 255));
-        btnEraser.setBounds(520, 0, 80, 130); // btnEraser 위치, 크기 조정 좌표는 plBottom 기준
-
-        btnDelete.setBackground(new Color(242, 242, 242, 255));
-        btnDelete.setBounds(600, 0, 100, 130); // btnEraser 위치, 크기 조정 좌표는 plBottom 기준
 
         // plEast
         taUserList.setBounds(0, 0, 255, 150); // taUserList 위치, 크기 조정 좌표는 plEast 기준
@@ -338,9 +331,8 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         plDrawRoom.add(btnPanel);
 
         plBottom.add(plPalette);
-        plBottom.add(btnEraser);
-        plBottom.add(btnDelete);
 
+        //팔레트에 크레용 및 지우개, 휴지통 버튼 추가
         plPalette.add(btnBlackDrawPen);
         plPalette.add(btnRedDrawPen);
         plPalette.add(btnOrangeDrawPen);
@@ -349,6 +341,8 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         plPalette.add(btnBlueDrawPen);
         plPalette.add(btnIndigoDrawPen);
         plPalette.add(btnPurpleDrawPen);
+        plPalette.add(btnEraser);
+        plPalette.add(btnDelete);
 
         plEast.add(plChat);
         plEast.add(taUserList);

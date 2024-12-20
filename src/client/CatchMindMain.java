@@ -17,7 +17,7 @@ public class CatchMindMain {
             serverThread.start();
 
             // 서버가 안정적으로 시작될 시간을 확보 (3초 지연)
-            Thread.sleep(2000);
+            Thread.sleep(1000);
 
             // 첫 번째 클라이언트 실행
             System.out.println("Starting CatchMindClient1...");

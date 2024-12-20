@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -165,26 +166,28 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         tfIdInput.setFont(ftMedium);
         btnId.setBounds(300, 300, 200, 80); // 아이디 확인 버튼 위치 조정
 
-        plDrawRoom.setLayout(null);
+        plDrawRoom.setLayout(null); //BorderLayout으로 배치관리자 설정
         plDrawRoom.setVisible(false); // 비활성화
         plDrawRoom.setBounds(59, 105, 1005, 656);// plDrawRoom 위치, 크기 조정 좌표는 plMain 기준
 
         plTopMpId.setLayout(null);
-        plTopMpId.setBackground(new Color(255, 255, 255, 255));
+        plTopMpId.setBackground(Color.GREEN);
         plTopMpId.setBounds(0, 0, 750, 530);
 
         plTop.setLayout(null);
-        plTop.setBackground(new Color(255, 255, 255, 0));
+        plTop.setBackground(Color.CYAN);
         plTop.setBounds(0, 0, 750, 80); // plTop 위치, 크기 조정 좌표는 plDrawRoom 기준
 
+        //스케치북이 되는 영역
         plMplId.setLayout(null);
-        plMplId.setBackground(new Color(255, 255, 255, 255));
+        plMplId.setBackground(Color.RED);
         plMplId.setBounds(0, 110, 750, 450); // plMplId 위치, 크기 조정 좌표는 plDrawRoom 기준
 
         plBottom.setLayout(null);
-        plBottom.setBackground(new Color(242, 242, 242, 255));
+        plBottom.setBackground(Color.GRAY);
         plBottom.setBounds(0, 530, 700, 130); // plBottom 위치, 크기 조정 좌표는 plDrawRoom 기준
 
+        //팔레트&지우개&휴지통 관련...
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
         iconRedPen = new ImageIcon("img/drawRedPen.png");
         iconOrangePen = new ImageIcon("img/drawOrangePen.png");
@@ -195,36 +198,33 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         iconPurplePen = new ImageIcon("img/drawPurplePen.png");
 
         btnBlackDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnBlackDrawPen.setBounds(0, 0, 65, 130);
         btnBlackDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnRedDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnRedDrawPen.setBounds(65, 0, 65, 130);
         btnRedDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnOrangeDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnOrangeDrawPen.setBounds(130, 0, 65, 130);
         btnOrangeDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnYellowDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnYellowDrawPen.setBounds(195, 0, 65, 130);
         btnYellowDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnGreenDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnGreenDrawPen.setBounds(260, 0, 65, 130);
         btnGreenDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnBlueDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnBlueDrawPen.setBounds(325, 0, 65, 130);
         btnBlueDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnIndigoDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnIndigoDrawPen.setBounds(390, 0, 65, 130);
         btnIndigoDrawPen.setBorderPainted(false); // 버튼 테두리 제거
 
         btnPurpleDrawPen.setBackground(new Color(242, 242, 242, 255));
-        btnPurpleDrawPen.setBounds(455, 0, 65, 130);
         btnPurpleDrawPen.setBorderPainted(false); // 버튼 테두리 제거
+
+        btnEraser.setBackground(new Color(242, 242, 242, 255)); //지우개 버튼
+
+        btnDelete.setBackground(new Color(242, 242, 242, 255)); //휴지통 버튼
+        //end of 팔레트&지우개&휴지통 관련...
 
         plEast.setLayout(null);
         plEast.setBounds(750, 0, 255, 530); // plEast 위치, 크기 조정 좌표는 plDrawRoom 기준
@@ -232,65 +232,67 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plChat.setLayout(null);
 
         btnPanel.setLayout(null);
-        btnPanel.setBackground(new Color(242, 242, 242, 255));
+        btnPanel.setBackground(Color.YELLOW);
         btnPanel.setBounds(700, 530, 405, 130);
 
-        plPalette.setLayout(null);
-        plPalette.setBackground(new Color(242, 242, 242, 255));
+        //크레용과 지우개, 휴지통을 담는 팔레트
+        plPalette.setLayout(new GridLayout(1,10));
+        plPalette.setBackground(Color.RED);
         plPalette.setBounds(0, 0, 520, 130); // plPalette 위치, 크기 조정 좌표는 plBottom 기준
-
-        btnEraser.setBackground(new Color(242, 242, 242, 255));
-        btnEraser.setBounds(520, 0, 80, 130); // btnEraser 위치, 크기 조정 좌표는 plBottom 기준
-
-        btnDelete.setBackground(new Color(242, 242, 242, 255));
-        btnDelete.setBounds(600, 0, 100, 130); // btnEraser 위치, 크기 조정 좌표는 plBottom 기준
 
         // plEast
         taUserList.setBounds(0, 0, 255, 150); // taUserList 위치, 크기 조정 좌표는 plEast 기준
         taUserList.setFont(ftMedium);
-        taUserList.setBackground(new Color(242, 242, 242, 255));
+        taUserList.setBackground(Color.MAGENTA);
         taUserList.setLineWrap(true);
 
-        plChat.setBackground(Color.WHITE);
+        plChat.setBackground(Color.GREEN);
         plChat.setBounds(0, 150, 255, 385); // plChat 위치, 크기 조정 좌표는 plEast 기준
 
         // plEast - plChat
-        tfChat.setBackground(Color.WHITE);
+        //채팅창의 입력 칸
         tfChat.setBounds(0, 350, 255, 30); // tfChat 위치, 크기 조정 좌표는 plEast 기준
         tfChat.setFont(ftMedium);
-        tfChat.setBackground(new Color(242, 242, 242, 255));
+        tfChat.setBackground(Color.CYAN);
         tfChat.setColumns(30);
 
+        //채팅 창의 스크롤 팬
         scrChat.setBounds(0, 0, 255, 350); // taChat 위치, 크기 조정 좌표는 plEast 기준
         scrChat.setFocusable(false);
 
+        //채팅 기록이 보여지는 채팅창
         taChat.setLineWrap(true);
-        taChat.setBackground(new Color(242, 242, 242, 255));
+        taChat.setBackground(Color.PINK);
 
-        // btnPanel
+        //제시어, 준비, 나가기 등이 부착되는 btnPanel
+        //제시어 안내 레이블
         laQuizTitle.setVisible(true);
         laQuizTitle.setBounds(0, 2, 155, 65); // laQuiz 위치, 크기 조정 좌표는 plTop 기준
         laQuizTitle.setFont(ftMedium);
-        laQuizTitle.setBackground(new Color(242, 242, 242, 255));
+        laQuizTitle.setBackground(Color.CYAN);
         laQuizTitle.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
+        //실제 제시어가 나오는 레이블
         laQuiz.setVisible(false);
         laQuiz.setBounds(0, 67, 155, 65); // laQuiz 위치, 크기 조정 좌표는 plTop 기준
         laQuiz.setFont(ftMedium);
-        laQuiz.setBackground(new Color(242, 242, 242, 255));
+        laQuiz.setBackground(Color.RED);
         laQuiz.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
+        //게임 패널 내의 준비 버튼
         btnReady.setBounds(150, 2, 155, 65); // btnReady 위치, 크기 조정 좌표는 plEast 기준
         btnReady.setFont(ftMedium);
-        btnReady.setBackground(new Color(242, 242, 242, 255));
+        btnReady.setBackground(Color.BLUE);
         btnReady.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
 
+        //게임 패널 내의 나가기 버튼
         btnExit.setBounds(150, 62, 155, 65); // btnExit 위치, 크기 조정 좌표는 plEast 기준
         btnExit.setFont(ftMedium);
-        btnExit.setBackground(new Color(242, 242, 242, 255));
+        btnExit.setBackground(Color.DARK_GRAY);
         btnExit.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
+        //end of 제시어, 준비, 나가기 등이 부착되는 btnPane...
 
-        // 드로우 캔버스
+        //게임 패널 내의 드로우 캔버스
         drawLabel.setBounds(0, 0, 750, 450);
         drawLabel.setBackground(new Color(255, 255, 255, 0));
         brush.setBounds(0, 0, 750, 450);
@@ -338,9 +340,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plDrawRoom.add(btnPanel);
 
         plBottom.add(plPalette);
-        plBottom.add(btnEraser);
-        plBottom.add(btnDelete);
-
+        //팔레트에 크레용 및 지우개, 휴지통 버튼 추가
         plPalette.add(btnBlackDrawPen);
         plPalette.add(btnRedDrawPen);
         plPalette.add(btnOrangeDrawPen);
@@ -349,11 +349,14 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plPalette.add(btnBlueDrawPen);
         plPalette.add(btnIndigoDrawPen);
         plPalette.add(btnPurpleDrawPen);
+        plPalette.add(btnEraser);
+        plPalette.add(btnDelete);
+
 
         plEast.add(plChat);
         plEast.add(taUserList);
 
-        plChat.add(scrChat);
+        Component add = plChat.add(scrChat);
         plChat.add(tfChat);
 
         btnPanel.add(laQuiz);
@@ -398,12 +401,12 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
             btnReady.setFocusPainted(false); // 포커스 효과 제거
             if (isReady) {
                 btnReady.setText("준비 취소"); // 텍스트 변경
-                btnReady.setBackground(new Color(107, 109, 109)); // 초록색으로 변경
+                btnReady.setBackground(Color.ORANGE); // 초록색으로 변경
                 btnReady.setForeground(Color.WHITE); // 텍스트 흰색
                 sendReady(); // 서버에 준비 상태 전송
             } else {
                 btnReady.setText("준비"); // 텍스트 변경
-                btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색으로 변경
+                btnReady.setBackground(Color.PINK); // 기본 배경색으로 변경
                 btnReady.setForeground(Color.BLACK); // 텍스트 검정색
                 sendReady(); // 서버에 준비 취소 상태 전송
             }
@@ -582,7 +585,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // 준비 버튼 초기화
         btnReady.setEnabled(true);
         btnReady.setText("준비");
-        btnReady.setBackground(new Color(242, 242, 242)); // 기본 배경색
+        btnReady.setBackground(Color.RED); // 기본 배경색
         btnReady.setForeground(Color.BLACK); // 기본 텍스트 색상
         isReady = false;
     }
