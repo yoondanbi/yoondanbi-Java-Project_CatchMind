@@ -22,7 +22,7 @@ public class Brush extends JLabel {
         if (isDrawingEnabled) {
             drawBrush(g, currentColor, DEFAULT_BRUSH_SIZE);
         } else {
-            drawBrush(g, Color.WHITE, 0); // 그리지 않을 때
+            drawBrush(g, Color.BLACK, 0); // 그리지 않을 때
         }
 
         if (shouldClearCanvas) {
@@ -36,9 +36,9 @@ public class Brush extends JLabel {
     private void drawBrush(Graphics g, Color color, int size) {
         g.setColor(color);
         if(color==Color.white){
-            g.fillOval(xCoordinate - size / 2, yCoordinate - size / 2, size+28, size+28);
+            g.fillOval(xCoordinate - size, yCoordinate - size, size+28, size+28);
         }else {
-            g.fillOval(xCoordinate - size / 2, yCoordinate - size / 2, size, size);
+            g.fillOval(xCoordinate - size, yCoordinate - size, size, size);
         }
     }
 

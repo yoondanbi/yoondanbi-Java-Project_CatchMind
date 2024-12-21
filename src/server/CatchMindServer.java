@@ -24,18 +24,33 @@ public class CatchMindServer {
 
     public CatchMindServer() {
         try {
-            server = new ServerSocket(PORT);
-            connectedClients = new Vector<>();
-            while (true) {
-                Socket clientSocket = server.accept();
-                ClientHandler client = new ClientHandler(clientSocket);
-                client.start();
-                connectedClients.add(client);
-            }
-        } catch (Exception e) {
-            System.out.println(LOG_TAG + "Server connection failed.");
+            initializeServer();
+            handleClientConnections();
+        } catch (IOException e) {
+            System.err.println(LOG_TAG + "Server initialization or connection failed: " + e.getMessage());
         }
     }
+
+    private void initializeServer() throws IOException {
+        server = new ServerSocket(PORT);
+        connectedClients = new Vector<>();
+        System.out.println(LOG_TAG + "Server started on port " + PORT);
+    }
+
+    private void handleClientConnections() throws IOException {
+        while (true) {
+            Socket clientSocket = server.accept();
+            addClient(clientSocket);
+        }
+    }
+
+    private void addClient(Socket clientSocket) {
+        ClientHandler client = new ClientHandler(clientSocket);
+        client.start();
+        connectedClients.add(client);
+        System.out.println(LOG_TAG + "New client connected: " + clientSocket.getInetAddress());
+    }
+
     class ClientHandler extends Thread {
         private Socket clientSocket;
         private PrintWriter output;
@@ -69,27 +84,34 @@ public class CatchMindServer {
         }
 
         private void handleProtocol(String[] parsedMessage) {
-            switch (parsedMessage[0]) {
+            if (parsedMessage == null || parsedMessage.length == 0) {
+                System.err.println("Invalid protocol message received.");
+                return;
+            }
+
+            String command = parsedMessage[0];
+
+            switch (command) {
                 case "ID":
                     processClientID(parsedMessage);
                     break;
                 case "CHAT":
                     processChat(parsedMessage);
                     break;
-                case "READY":
-                    toggleReadyStatus();
-                    break;
                 case "START":
                     startGame();
+                    break;
+                case "READY":
+                    toggleReadyStatus();
                     break;
                 case "TURN":
                     processTurn();
                     break;
-                case "DRAW":
-                    forwardDrawing(parsedMessage);
-                    break;
                 case "COLOR":
                     forwardColorChange(parsedMessage);
+                    break;
+                case "DRAW":
+                    forwardDrawing(parsedMessage);
                     break;
                 case "SKIP":
                     skipTurn(parsedMessage);
@@ -114,12 +136,15 @@ public class CatchMindServer {
 
         private void assignTurnsAndScores() {
             for (int i = 0; i < connectedClients.size(); i++) {
-                ClientHandler client = connectedClients.get(i);
-                client.output.println("ID&");
-                client.turnIndex = i + 1;
-                client.score = 0;
+                initializeClient(connectedClients.get(i), i + 1);
             }
             sendClientList();
+        }
+
+        private void initializeClient(ClientHandler client, int turnIndex) {
+            client.output.println("ID&");
+            client.turnIndex = turnIndex;
+            client.score = 0;
         }
 
         private void sendClientList() {
@@ -175,13 +200,12 @@ public class CatchMindServer {
         private void moveToNextWord() {
             currentWordIndex++;
             if (currentWordIndex >= ProblemManager.getProblemCount()) {
-                currentWordIndex = 0; // 제시어 순환
+                currentWordIndex = 0;
             }
 
             // 게임 종료 조건
             if (connectedClients.size() < 2 || currentWordIndex==0) {
                 gameEnded = true;
-                System.out.println("endGame1");
                 endGame();
             }
         }
@@ -217,7 +241,7 @@ public class CatchMindServer {
         }
 
         private void processTurn() {
-            if (gameStarted) { // answeredCorrectly 제거: 첫 턴도 처리해야 하기 때문
+            if (gameStarted) {
                 for (ClientHandler client : connectedClients) {
                     if (client.turnIndex == currentTurn) { // 현재 턴의 클라이언트 찾기
                         String currentWord = ProblemManager.getProblem(currentWordIndex);
@@ -280,7 +304,6 @@ public class CatchMindServer {
         }
 
         private void endGame() {
-            System.out.println("endGame2");
             String scoreBoard = generateScoreBoard();
 
             // 모든 클라이언트에 게임 종료 메시지 전송
@@ -295,10 +318,8 @@ public class CatchMindServer {
             for (ClientHandler client : connectedClients) {
                 client.resetGameState();
             }
-
             // 클라이언트 리스트 비우기
             connectedClients.clear();
-
             // 서버 상태 초기화
             resetGameState();
         }
@@ -306,11 +327,11 @@ public class CatchMindServer {
         private void resetGameState() {
             gameStarted = false;
             gameEnded = false;
-            ready = false;
             answeredCorrectly = false;
             readyCount = 0;
             currentTurn = 1;
             score = 0;
+            ready = false;
         }
     }
 
