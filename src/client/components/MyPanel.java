@@ -9,6 +9,6 @@ public class MyPanel extends JPanel {
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(imgMain, 0, 0, getWidth(), getHeight(), null);
+        g.drawImage(imgMain, 0, 0, 600, 500, null);
     }
 }
