@@ -3,7 +3,7 @@ package manager;
 public class ProblemManager {
     // 문제를 저장하는 배열
     private static final String[] PROBLEMS = {
-            "햄버거","새우","간장","오징어"
+            "햄버거"
     };
 
     // 문제 배열 반환 메서드

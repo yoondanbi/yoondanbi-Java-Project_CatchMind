@@ -148,7 +148,7 @@ class ReaderThread extends Thread {
             case "Purple": brush.setColor(Color.PINK); break;
             case "White": brush.setColor(Color.WHITE); break;
             case "Delete":
-                brush.setClearC(false);
+                brush.setShouldClearCanvas(false);
                 brush.repaint();
                 brush.printAll(imgBuff.getGraphics());
                 break;
@@ -168,7 +168,7 @@ class ReaderThread extends Thread {
     private void handleNotTurn() {
         laQuiz.setVisible(false); // 퀴즈 숨기기
         drawPPAP = false; // 그림 그리기 비활성화
-        brush.setDrawPen(false); // 펜 비활성화
+        brush.setDrawingEnabled(false); // 펜 비활성화
         tfChat.setEnabled(true); // 채팅 입력 활성화
         plBottom.setVisible(false); // 하단 패널 숨기기
     }
