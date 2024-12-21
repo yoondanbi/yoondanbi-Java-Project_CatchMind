@@ -3,6 +3,7 @@ package client;
 import client.components.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -11,6 +12,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -28,7 +30,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
     private MyPanel plMain;
     private JButton btnStart;
-    private JPanel plId, plSub, plDrawRoom, plMplId, plBottom, btnPanel, plEndGame;
+    private JPanel plId, plSub, plDrawRoom, plBasePanel,plMplId, plBottom, btnPanel, plEndGame;
     private JSplitPane splitPane;
     private MyPanel2 plPalette;
     private MyButton btnEraser;
@@ -43,8 +45,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private JScrollPane scrChat;
 
     private JLabel laQuizTitle, laQuiz, laId, lbScores;
-    private JButton btnId, btnReady, btnEndGame, btnRestart;
-    private PaintButton btnExit;
+    private JButton btnId, btnReady,btnExit, btnEndGame, btnRestart,btnSend;
 
     private Font ftSmall, ftMedium, ftLarge;
     private BufferedImage imgBuff;
@@ -72,6 +73,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plId = new JPanel();
         plSub = new JPanel();
         plDrawRoom = new JPanel();
+        plBasePanel=new JPanel();
         plMplId = new JPanel();
         plBottom = new JPanel();
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -98,8 +100,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         btnStart = new JButton(icGameStart);
         btnId = new JButton(icGameStart);
-        btnReady = new JButton("준비");
-        btnExit = new PaintButton(new ImageIcon("img/exit.png"));
+        btnReady = new JButton(new ImageIcon("img/ready.png"));
+        btnExit = new JButton(new ImageIcon("img/exit.png"));
+        btnSend =new JButton("send");
 
         btnBlackDrawPen = new PaintButton(iconBlackPen);
         btnRedDrawPen = new PaintButton(iconRedPen);
@@ -111,7 +114,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         btnPurpleDrawPen = new PaintButton(iconPurplePen);
 
         laId = new JLabel("아이디");
-        laQuizTitle = new JLabel("제시어");
+        laQuizTitle = new JLabel("제시어: ");
         laQuiz = new JLabel("변수");
 
         tfIdInput = new TextField();
@@ -120,12 +123,39 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         taChat = new JTextArea();
         taUserList = new JTextArea();
 
-        ftSmall = new Font("맑은고딕", Font.PLAIN, 16);
-        ftMedium = new Font("맑은고딕", Font.PLAIN, 24);
-        ftLarge = new Font("맑은고딕", Font.PLAIN, 36);
-
         scrChat = new JScrollPane(taChat, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        // 세로 스크롤바 색상 변경
+        JScrollBar verticalScrollBar = scrChat.getVerticalScrollBar();
+        verticalScrollBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
+            private Color decrementButtonColor;
+
+            @Override
+            protected void configureScrollBarColors() {
+                // 세로 스크롤바의 thumb(스크롤바 조작 부분) 색상
+                this.thumbColor = Color.PINK;
+                // 스크롤바 트랙 색상
+                this.trackColor = new Color(255, 204, 229);
+            }
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                JButton button = super.createDecreaseButton(orientation);
+                button.setBackground(Color.PINK); // 위 버튼 색
+                button.setBorderPainted(false); // 버튼 테두리 제거
+                button.setIcon(null); // 화살표 아이콘 제거
+                return button;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                JButton button = super.createIncreaseButton(orientation);
+                button.setBackground(Color.PINK); // 아래 버튼 색
+                button.setBorderPainted(false); // 버튼 테두리 제거
+                button.setIcon(null); // 화살표 아이콘 제거
+                return button;
+            }
+        });
 
         imgBuff = new BufferedImage(750, 450, BufferedImage.TYPE_INT_ARGB);
         drawLabel = new JLabel(new ImageIcon(imgBuff));
@@ -169,10 +199,32 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plDrawRoom.setVisible(false); // 비활성화
         plDrawRoom.setBounds(0,0, 600, 500);// plDrawRoom 위치, 크기 조정 좌표는 plMain 기준
 
+        //스케치북 디자인을 위해 배경이 되는 패널
+        plBasePanel.setLayout(null);
+        plBasePanel.setBackground(Color.WHITE);
+
+        //스케치북 디자인을 위해 스프링 이미지를 넣는 이미지 레이블
+        ImageIcon springImage = new ImageIcon("img/spring.png");
+        JLabel imageLabel = new JLabel(springImage);
+        JLabel imageLabel1 = new JLabel(springImage);
+        JLabel imageLabel2 = new JLabel(springImage);
+
+        // 스프링 이미지 레이블 크기 및 위치 설정 (plBasePanel 상단에 배치)
+        imageLabel.setBounds(5, -45, springImage.getIconWidth(), springImage.getIconHeight());
+        imageLabel1.setBounds(137, -45, springImage.getIconWidth(), springImage.getIconHeight());
+        imageLabel2.setBounds(274, -45, springImage.getIconWidth(), springImage.getIconHeight());
+
+        plBasePanel.add(imageLabel);
+        plBasePanel.add(imageLabel1);
+        plBasePanel.add(imageLabel2);
+
         //스케치북이 되는 영역
         plMplId.setLayout(null);
         plMplId.setBackground(Color.WHITE);
-        plMplId.setBounds(0, 110, 750, 450); // plMplId 위치, 크기 조정 좌표는 plDrawRoom 기준
+        plMplId.setBounds(10, 15, 400, 315); // plMplId 위치, 크기 조정 좌표는 plBasePanel 기준
+        // 테두리 설정
+        Border border = BorderFactory.createLineBorder(Color.BLACK, 5);  // 검은색 선 테두리, 두께 5
+        plMplId.setBorder(border);
 
         //팔레트&지우개&휴지통 관련...
         iconBlackPen = new ImageIcon("img/drawBlackPen.png");
@@ -191,64 +243,71 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         plChat.setLayout(null); /////////////////////
 
         //끝내기, 준비 버튼과 제시어가 나오는 패널
-        btnPanel.setLayout(new FlowLayout());
-        btnPanel.setBackground(Color.YELLOW);
-        btnPanel.setBounds(700, 530, 405, 130);
+        btnPanel.setLayout(null);
+        btnPanel.setPreferredSize(new Dimension(600, 70));
+        btnPanel.setBackground(Color.WHITE);
 
         //크레용과 지우개, 휴지통을 담는 팔레트
         plPalette.setLayout(new GridLayout(1,10));
 
         //SplitPane - 아이디와 점수판을 나타내는 패널
         taUserList.setBounds(0, 0, 255, 150); // taUserList 위치, 크기 조정 좌표는 plEast 기준
-        taUserList.setFont(ftMedium);
-        taUserList.setBackground(Color.MAGENTA);
+        taUserList.setFont(loadFont("fonts/cuteFont.ttf", Font.PLAIN, 23));
+        taUserList.setBackground(Color.WHITE);
         taUserList.setLineWrap(true);
 
         //SplitPane - 채팅창(tachat), 채팅 입력칸(tfchat), 스크롤팬(scrchat)을 가지는 패널
-        plChat.setBackground(Color.GREEN);
-        plChat.setSize(180,300);// plChat 위치, 크기 조정 좌표는 plEast 기준
+        plChat.setBackground(Color.WHITE);
+        plChat.setSize(170,300);// plChat 위치, 크기 조정 좌표는 plEast 기준
 
         //SplitPane - 채팅창의 입력 칸
-        tfChat.setBounds(0,190,180, 50); // tfChat 크기
-        tfChat.setFont(ftMedium);
-        tfChat.setBackground(Color.CYAN);
+        tfChat.setBounds(0,200,100, 43); // tfChat 크기
+        tfChat.setFont(loadFont("fonts/cuteFont.ttf", Font.BOLD, 20));
+        tfChat.setBackground(Color.WHITE);
         tfChat.setColumns(30);
 
+        //SplitPane - 채팅창의 입력 칸 값을 보내는 버튼
+        btnSend.setBounds(105,200,58,43);
+        btnSend.setFont(loadFont("fonts/cuteFont.ttf", Font.BOLD, 11));
+        btnSend.setBackground(Color.pink);
+        btnSend.setForeground(Color.WHITE);
+
         //채팅 창의 스크롤 팬
-        scrChat.setSize(180, 190); // taChat 크기
+        scrChat.setSize(165, 190); // taChat 크기
         scrChat.setFocusable(false);
+        scrChat.setBackground(Color.WHITE);
         //채팅 기록이 보여지는 채팅창
         taChat.setLineWrap(true);
-        taChat.setBackground(Color.PINK);
+        taChat.setFont(loadFont("fonts/cuteFont.ttf", Font.PLAIN, 13));
+        taChat.setBackground(Color.WHITE);
 
         //제시어, 준비, 나가기 등이 부착되는 btnPanel
         //제시어 안내 레이블
         laQuizTitle.setVisible(true);
-        laQuizTitle.setFont(ftMedium);
-        laQuizTitle.setBackground(Color.CYAN);
+        laQuizTitle.setBounds(10,18,100,50);
+        laQuizTitle.setFont(loadFont("fonts/cuteFont.ttf", Font.BOLD, 30));
         laQuizTitle.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
         //실제 제시어가 나오는 레이블
         laQuiz.setVisible(false);
-        laQuiz.setFont(ftMedium);
-        laQuiz.setBackground(Color.RED);
+        laQuiz.setBounds(100,18,100,50);
+        laQuiz.setFont(loadFont("fonts/cuteFont.ttf", Font.BOLD, 30));
         laQuiz.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
         //게임 패널 내의 준비 버튼
-        btnReady.setFont(ftMedium);
-        btnReady.setBackground(Color.BLUE);
-        btnReady.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
+        btnReady.setBackground(Color.WHITE);
+        btnReady.setBounds(485,15,45,38);
+        btnReady.setBorderPainted(false);
 
         //게임 패널 내의 나가기 버튼
-        //btnExit.setFont(ftMedium);
         btnExit.setBackground(Color.WHITE);
-        btnExit.setBounds(btnPanel.getX()-10,btnPanel.getY()-20,40,40);
-        //btnExit.setBorder(new LineBorder(new Color(87, 87, 87), 5, true));
-        //end of 제시어, 준비, 나가기 등이 부착되는 btnPane...
+        btnExit.setBounds(535,16,40,40);
+        btnExit.setBorderPainted(false);
+        //end of 제시어, 준비, 나가기 등이 부착되는 btnPanel...
 
         //게임 패널 내의 드로우 캔버스
         drawLabel.setBounds(0,0,750,450);
-        drawLabel.setBackground(Color.CYAN);
+        drawLabel.setBackground(Color.WHITE);
         brush.setBounds(0, 0, 750, 450); //이 부분 추후 다시 수정
 
 
@@ -286,8 +345,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
 
         //메인 게임 패널에 붙이는 부분
-        //plDrawRoom.add(plTopMpId); //추후 삭제
-        plDrawRoom.add(plMplId,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경
+        plDrawRoom.add(plBasePanel,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경  //??????????
         plDrawRoom.add(plPalette,BorderLayout.SOUTH); //plPalette로 변경, south
         plDrawRoom.add(splitPane,BorderLayout.EAST); //east
         plDrawRoom.add(btnPanel,BorderLayout.NORTH); //north
@@ -308,6 +366,8 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         //BorderLayout의 EAST에 위치하는 JSplitPane
         splitPane.setDividerLocation(70); //h좌표 100에서 나누도록 설정
+        splitPane.setDividerSize(0); // Divider 크기 0으로 설정
+        splitPane.setBorder(null); // 테두리 제거
         splitPane.setEnabled(false); //SplitPane영역을 사용자가 임의로 움직일 수 없도록 설정
         splitPane.setTopComponent(taUserList);
         splitPane.setBottomComponent(plChat);
@@ -316,11 +376,14 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         Component add = plChat.add(scrChat);
         plChat.add(tfChat);
+        plChat.add(btnSend);
 
         btnPanel.add(laQuizTitle);
         btnPanel.add(laQuiz);
         btnPanel.add(btnReady);
         btnPanel.add(btnExit);
+
+        plBasePanel.add(plMplId);
 
         // 드로우
         plMplId.add(drawLabel);
@@ -363,9 +426,8 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
                 btnReady.setForeground(Color.WHITE); // 텍스트 흰색
                 sendReady(); // 서버에 준비 상태 전송
             } else {
-                btnReady.setText("준비"); // 텍스트 변경
-                btnReady.setBackground(Color.PINK); // 기본 배경색으로 변경
-                btnReady.setForeground(Color.BLACK); // 텍스트 검정색
+                //준비 취소 이미지로 변경 코드 추후 추가
+                btnReady.setBackground(Color.WHITE); // 기본 배경색으로 변경
                 sendReady(); // 서버에 준비 취소 상태 전송
             }
         });
@@ -542,9 +604,8 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         // 준비 버튼 초기화
         btnReady.setEnabled(true);
-        btnReady.setText("준비");
-        btnReady.setBackground(Color.RED); // 기본 배경색
-        btnReady.setForeground(Color.BLACK); // 기본 텍스트 색상
+        btnReady.setBorderPainted(false);
+        btnReady.setBackground(Color.WHITE); // 기본 배경색
         isReady = false;
     }
 
@@ -676,5 +737,17 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
     public static void main(String[] args) {
         new CatchMindClient1();
+    }
+
+    // TTF 폰트를 불러오는 메서드
+    private static Font loadFont(String path, int style, int size) {
+        try {
+            File fontFile = new File(path);
+            Font customFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+            return customFont.deriveFont(style, size);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            return new Font("Arial", style, size); // 실패 시 기본 폰트 사용
+        }
     }
 }
