@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class CatchMindServer {
-    private static final String LOG_TAG = "CatchMindServer: ";
+    private static final String LOG_TAG = "twoEZ - catchMind: ";
     private static final int PORT = 3000;
     public static List<ClientHandler> connectedClients = Collections.synchronizedList(new ArrayList<>());
     private ServerSocket server;
@@ -27,9 +27,7 @@ public class CatchMindServer {
             server = new ServerSocket(PORT);
             connectedClients = new Vector<>();
             while (true) {
-                System.out.println("Waiting for client connections...");
                 Socket clientSocket = server.accept();
-                System.out.println("Client connected successfully.");
                 ClientHandler client = new ClientHandler(clientSocket);
                 client.start();
                 connectedClients.add(client);

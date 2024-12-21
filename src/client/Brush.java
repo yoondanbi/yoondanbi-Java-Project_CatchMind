@@ -5,38 +5,64 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class Brush extends JLabel {
-    private int xx, yy;
-    private Color color = Color.BLACK;
-    private boolean drawPen = true;
-    private boolean clearC = true;
-    private BufferedImage imgBuff;
+    private static final int DEFAULT_BRUSH_SIZE = 15; // 브러시 기본 크기
+    private static final int CLEAR_RECT_SIZE = 1000; // 캔버스 초기화 크기
+    private int xCoordinate;
+    private int yCoordinate;
+    private Color currentColor = Color.BLACK;
+    private boolean isDrawingEnabled = true;
+    private boolean shouldClearCanvas = true;
+    private final BufferedImage imageBuffer;
 
-    public Brush(BufferedImage imgBuff) {
-        this.imgBuff = imgBuff; // 이미지 버퍼를 전달
+    public Brush(BufferedImage imageBuffer) {
+        this.imageBuffer = imageBuffer; // 이미지 버퍼 초기화
     }
-
     @Override
     public void paint(Graphics g) {
-        if (drawPen) { // 그릴 수 있는 상태
-            g.setColor(color);
-            g.fillOval(xx - 15, yy - 15, 15, 15);
+        if (isDrawingEnabled) {
+            drawBrush(g, currentColor, DEFAULT_BRUSH_SIZE);
         } else {
-            g.setColor(Color.WHITE);
-            g.fillOval(0, 0, 0, 0);
+            drawBrush(g, Color.WHITE, 0); // 그리지 않을 때
         }
-        if (clearC) {
-            g.setColor(color);
-            g.fillOval(xx - 15, yy - 15, 15, 15);
+
+        if (shouldClearCanvas) {
+            drawBrush(g, currentColor, DEFAULT_BRUSH_SIZE);
         } else {
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, 1000, 1000);
-            clearC = true;
+            clearCanvas(g);
+            shouldClearCanvas = true; // 캔버스 초기화 플래그 재설정
         }
     }
 
-    public void setX(int x) { this.xx = x; }
-    public void setY(int y) { this.yy = y; }
-    public void setColor(Color color) { this.color = color; }
-    public void setDrawPen(boolean drawPen) { this.drawPen = drawPen; }
-    public void setClearC(boolean clearC) { this.clearC = clearC; }
+    private void drawBrush(Graphics g, Color color, int size) {
+        g.setColor(color);
+        if(color==Color.white){
+            g.fillOval(xCoordinate - size / 2, yCoordinate - size / 2, size+28, size+28);
+        }else {
+            g.fillOval(xCoordinate - size / 2, yCoordinate - size / 2, size, size);
+        }
+    }
+
+    private void clearCanvas(Graphics g) {
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, CLEAR_RECT_SIZE, CLEAR_RECT_SIZE);
+    }
+
+    public void setX(int x) {
+        this.xCoordinate = x;
+    }
+
+    public void setY(int y) {
+        this.yCoordinate = y;
+    }
+    public void setColor(Color color) {
+        this.currentColor = color;
+    }
+
+    public void setDrawingEnabled(boolean isEnabled) {
+        this.isDrawingEnabled = isEnabled;
+    }
+
+    public void setShouldClearCanvas(boolean shouldClear) {
+        this.shouldClearCanvas = shouldClear;
+    }
 }
