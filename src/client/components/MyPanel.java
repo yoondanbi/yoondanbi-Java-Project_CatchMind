@@ -25,4 +25,10 @@ public class MyPanel extends JPanel {
         this.remove(gifLabel);
         this.repaint();
     }
+
+    //배경화면을 구성하는 이미지들을 재부착하는 메서드
+    public void addStartPanelDesign(){
+        this.add(gifLabel);
+        this.repaint();
+    }
 }

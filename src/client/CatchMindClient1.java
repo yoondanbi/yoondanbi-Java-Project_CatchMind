@@ -361,7 +361,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
 
         //메인 게임 패널에 붙이는 부분
-        panelDrawRoom.add(panelBasePanel,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경  //??????????
+        panelDrawRoom.add(panelBasePanel,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경
         panelDrawRoom.add(panelPalette,BorderLayout.SOUTH); //panelPalette로 변경, south
         panelDrawRoom.add(splitPane,BorderLayout.EAST); //east
         panelDrawRoom.add(btnPanel,BorderLayout.NORTH); //north
@@ -504,15 +504,17 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         panelId.setVisible(false);       // ID 입력 화면 비활성화
 
         // 종료 화면 패널 크기 설정
-        panelEndGame.setBounds(0, 0, 600, 500); // 종료 화면 크기 600x500으로 설정
+        panelEndGame.setBounds(0, 0, 587, 463); // 종료 화면 크기 600x500으로 설정
         panelEndGame.setVisible(true);
-        panelEndGame.setBackground(panelMain.getBackground()); // 기존 배경 유지
+        panelEndGame.setBorder(new LineBorder(new Color(42,86,186), 20, true));
+        panelEndGame.setBackground(new Color(0,138,255));
 
         // "Game Over!" 텍스트 추가
         JLabel gameOverLabel = new JLabel("Game Over!");
-        gameOverLabel.setFont(new Font("맑은 고딕", Font.BOLD, 36));
+        gameOverLabel.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 60));
+        gameOverLabel.setForeground(Color.WHITE);
         gameOverLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        gameOverLabel.setBounds(0, 30, 600, 50); // 화면 상단에 중앙 정렬
+        gameOverLabel.setBounds(0, 55, 600, 70); // 화면 상단에 중앙 정렬
         panelEndGame.add(gameOverLabel);
 
         // 점수 데이터 처리
@@ -531,15 +533,18 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // 점수 표시 영역 초기화
         JPanel scorePanel = new JPanel();
         scorePanel.setLayout(new GridLayout(scoreList.size() + 1, 3, 10, 10)); // 점수판 레이아웃 설정
-        scorePanel.setBounds(100, 100, 400, 200); // 화면 가운데 위치
+        scorePanel.setBounds(100, 145, 400, 200); // 화면 가운데 위치
         scorePanel.setOpaque(false); // 배경 투명
 
         JLabel rankHeader = new JLabel("랭킹", SwingConstants.CENTER);
         JLabel idHeader = new JLabel("아이디", SwingConstants.CENTER);
         JLabel scoreHeader = new JLabel("점수", SwingConstants.CENTER);
-        rankHeader.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-        idHeader.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-        scoreHeader.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+        rankHeader.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 25));
+        idHeader.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 25));
+        scoreHeader.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 25));
+        rankHeader.setForeground(Color.WHITE);
+        idHeader.setForeground(Color.WHITE);
+        scoreHeader.setForeground(Color.WHITE);
         scorePanel.add(rankHeader);
         scorePanel.add(idHeader);
         scorePanel.add(scoreHeader);
@@ -552,9 +557,12 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
             JLabel rankLabel = new JLabel(String.valueOf(rank), SwingConstants.CENTER);
             JLabel idLabel = new JLabel(playerId, SwingConstants.CENTER);
             JLabel scoreLabel = new JLabel(playerScore, SwingConstants.CENTER);
-            rankLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
-            idLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
-            scoreLabel.setFont(new Font("맑은 고딕", Font.PLAIN, 16));
+            rankLabel.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 20));
+            idLabel.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 20));
+            scoreLabel.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 20));
+            rankLabel.setForeground(Color.WHITE);
+            idLabel.setForeground(Color.WHITE);
+            scoreLabel.setForeground(Color.WHITE);
             scorePanel.add(rankLabel);
             scorePanel.add(idLabel);
             scorePanel.add(scoreLabel);
@@ -573,10 +581,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         // 재시작 버튼
         btnRestart.setText("재시작");
-        btnRestart.setBounds(50, buttonY, buttonWidth, buttonHeight);
-        btnRestart.setFont(buttonFont);
-        btnRestart.setBackground(Color.WHITE);
-        btnRestart.setForeground(Color.BLACK);
+        btnRestart.setBounds(30, buttonY+20, buttonWidth, buttonHeight);
+        btnRestart.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 25));
+        btnRestart.setForeground(Color.WHITE);
         btnRestart.setFocusPainted(false);
         btnRestart.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
@@ -584,14 +591,12 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         btnRestart.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent evt) {
-                btnRestart.setBackground(new Color(87, 255, 87)); // 초록색 배경
-                btnRestart.setForeground(Color.WHITE); // 흰색 글자
+                btnRestart.setForeground(new Color(42,86,186));
             }
 
             @Override
             public void mouseExited(MouseEvent evt) {
-                btnRestart.setBackground(Color.WHITE); // 기본 흰색 배경
-                btnRestart.setForeground(Color.BLACK); // 기본 검정 텍스트
+                btnRestart.setForeground(Color.WHITE); // 기본 검정 텍스트
             }
         });
 
@@ -599,10 +604,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         // 종료 버튼
         btnEndGame.setText("게임 종료");
-        btnEndGame.setBounds(150 + buttonWidth + buttonGap, buttonY, buttonWidth, buttonHeight);
-        btnEndGame.setFont(buttonFont);
-        btnEndGame.setBackground(Color.WHITE);
-        btnEndGame.setForeground(Color.BLACK);
+        btnEndGame.setBounds(130 + buttonWidth + buttonGap, buttonY+20, buttonWidth, buttonHeight);
+        btnEndGame.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 25));
+        btnEndGame.setForeground(Color.WHITE);
         btnEndGame.setFocusPainted(false);
         btnEndGame.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
@@ -610,14 +614,12 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         btnEndGame.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent evt) {
-                btnEndGame.setBackground(new Color(255, 87, 87)); // 빨간색 배경
-                btnEndGame.setForeground(Color.WHITE); // 흰색 글자
+                btnEndGame.setForeground(new Color(42,86,186)); // 흰색 글자
             }
 
             @Override
             public void mouseExited(MouseEvent evt) {
-                btnEndGame.setBackground(Color.WHITE); // 기본 흰색 배경
-                btnEndGame.setForeground(Color.BLACK); // 기본 검정 텍스트
+                btnEndGame.setForeground(Color.WHITE); // 기본 검정 텍스트
             }
         });
 
@@ -651,8 +653,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private void resetGameSession() {
         panelEndGame.setVisible(false); // 종료 화면 숨김
         panelId.setVisible(false);       // 초기화면 활성화
-        btnId.setVisible(false);
+        panelMain.addStartPanelDesign();
         btnStart.setVisible(true);   // 시작 버튼 활성화
+        btnId.setVisible(false);
         panelDrawRoom.setVisible(false); // 그리기 방 비활성화
         resetGameState();            // 게임 상태 초기화
 
