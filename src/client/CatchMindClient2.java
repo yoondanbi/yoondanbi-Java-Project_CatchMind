@@ -49,6 +49,7 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
     public static boolean isDrawingEnabled = true;
     ReaderThread readerThread;
     private boolean isReady = false; // 버튼 상태를 저장하는 변수 (false: 준비 안 됨, true: 준비됨)
+    private ImageIcon ready1Icon, ready2Icon;
 
     public CatchMindClient2() {
         init();
@@ -95,7 +96,12 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         btnStart = new JButton(icGameStart);
         btnId = new JButton(icGameStart);
         btnSend =new JButton("send");
-        btnReady = new JButton(new ImageIcon("img/ready.png"));
+
+        // Ready 버튼 아이콘 로드 및 고품질 리사이즈
+        ready1Icon = resizeIcon(new ImageIcon("img/ready.png"), 40, 40); // 원하는 크기로 설정
+        ready2Icon = resizeIcon(new ImageIcon("img/ready2.png"), 60, 60);
+        btnReady = new JButton(ready1Icon);
+
         btnExit = new JButton(new ImageIcon("img/exit.png"));
 
         btnBlackDrawPen = new PaintButton(penIconBlack);
@@ -290,8 +296,9 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
 
         //게임 패널 내의 준비 버튼
         btnReady.setBackground(Color.WHITE);
-        btnReady.setBounds(485,15,45,38);
+        btnReady.setBounds(485,15,40,40);
         btnReady.setBorderPainted(false);
+        btnReady.setFocusPainted(false); // 포커스 제거
 
         //게임 패널 내의 나가기 버튼
         btnExit.setBackground(Color.WHITE);
@@ -413,15 +420,24 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
                 return; // 버튼이 비활성화된 경우 동작하지 않음
             }
             isReady = !isReady; // 준비 상태 토글
-            btnReady.setFocusPainted(false); // 포커스 효과 제거
+//            btnReady.setFocusPainted(false); // 포커스 효과 제거
+//            if (isReady) {
+//                btnReady.setText("준비 취소"); // 텍스트 변경
+//                btnReady.setBackground(Color.ORANGE); // 초록색으로 변경
+//                btnReady.setForeground(Color.WHITE); // 텍스트 흰색
+//                sendReadyCommand(); // 서버에 준비 상태 전송
+//            } else {
+//                //준비 취소 이미지로 변경 코드 추후 추가
+//                btnReady.setBackground(Color.WHITE); // 기본 배경색으로 변경
+//                sendReadyCommand(); // 서버에 준비 취소 상태 전송
+//            }
             if (isReady) {
-                btnReady.setText("준비 취소"); // 텍스트 변경
-                btnReady.setBackground(Color.ORANGE); // 초록색으로 변경
-                btnReady.setForeground(Color.WHITE); // 텍스트 흰색
+                btnReady.setIcon(ready2Icon); // 준비 완료 이미지로 변경
+                btnReady.setBounds(471,5,60,60);
                 sendReadyCommand(); // 서버에 준비 상태 전송
             } else {
-                //준비 취소 이미지로 변경 코드 추후 추가
-                btnReady.setBackground(Color.WHITE); // 기본 배경색으로 변경
+                btnReady.setIcon(ready1Icon); // 준비 취소 이미지로 변경
+                btnReady.setBounds(482,15,40,40);
                 sendReadyCommand(); // 서버에 준비 취소 상태 전송
             }
         });
@@ -602,6 +618,14 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         btnReady.setBorderPainted(false);
         btnReady.setBackground(Color.WHITE); // 기본 배경색
         isReady = false;
+    }
+
+
+    // 이미지 크기를 조정하고 고품질로 변환하는 메서드
+    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
+        Image img = icon.getImage();
+        Image resizedImg = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImg);
     }
 
 
