@@ -19,7 +19,7 @@ import java.net.Socket;
 public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private static final String LOG_TAG = "GameStart :";
     private String userId;
-    private ImageIcon icGameStart, penIconBlack, penIconRed, penIconOrange, penIconYellow,
+    private ImageIcon penIconBlack, penIconRed, penIconOrange, penIconYellow,
             penIconGreen, penIconBlue, penIconIndigo, penIconPurple;
     private Socket clientSocket;
     private PrintWriter outputWriter;
@@ -91,10 +91,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         penIconRed = new ImageIcon("img/redPaint.png");
         penIconOrange = new ImageIcon("img/orangePaint.png");
         penIconYellow = new ImageIcon("img/yellowPaint.png");
-        icGameStart = new ImageIcon("img/gameStart.png");
 
-        btnStart = new JButton(icGameStart);
-        btnId = new JButton(icGameStart);
+        btnStart = new JButton("START");
+        btnId = new JButton("START");
         btnSend =new JButton("send");
         btnReady = new JButton(new ImageIcon("img/ready.png"));
         btnExit = new JButton(new ImageIcon("img/exit.png"));
@@ -165,19 +164,24 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // panelMain
         setContentPane(panelMain);
         panelMain.setLayout(null);
-        btnStart.setBounds(300, 400, 200, 80); // 시작 버튼 위치 조정
+        btnStart.setBounds(100, 400, 400, 80); // 시작 버튼 위치 조정
+        btnStart.setContentAreaFilled(false);
+        btnStart.setOpaque(false); // 투명도 활성화
+        btnStart.setForeground(Color.WHITE);
+        btnStart.setBorderPainted(false);
+        btnStart.setFocusPainted(false);
+        btnStart.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 70));
 
-        icGameStart = new ImageIcon("img/gameStart.png"); // 게임시작 버튼 이미지
         // panelId
         panelId.setLayout(null);
         panelId.setVisible(false); // 비활성화
         panelId.setBackground(new Color(242, 242, 242));
-        panelId.setBounds(44, 100, 650, 400); // panelId 위치, 크기 조정 (x, y, width, height) 좌표는 panelMain 기준
+        panelId.setBounds(0,0,600,500); // panelId 위치, 크기 조정 (x, y, width, height) 좌표는 panelMain 기준
 
         panelSub.setLayout(null);
         panelSub.setVisible(false); // 비활성화
         panelSub.setBorder(new LineBorder(new Color(87, 87, 87), 3, true));
-        panelSub.setBounds(275, 200, 250, 40); // 아이디 입력 필드 중앙 배치
+        panelSub.setBounds(0,0,600,500); // 아이디 입력 필드 중앙 배치
 
         labelUserId.setBounds(0, 2, 62, 32); // labelUserId 위치, 크기 조정 (x, y, width, height) 좌표는 panelId 기준
         labelUserId.setBorder(new LineBorder(new Color(87, 87, 87), 2, true));
@@ -188,7 +192,13 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         textFieldUserIdInput.setBounds(65, 3, 185, 34);
         textFieldUserIdInput.setBackground(new Color(242, 242, 242, 255));
         textFieldUserIdInput.setFont(ftMedium);
+
         btnId.setBounds(300, 300, 200, 80); // 아이디 확인 버튼 위치 조정
+        btnId.setBackground(Color.PINK);
+        btnId.setForeground(Color.WHITE);
+        btnId.setBorderPainted(false);
+        btnId.setFocusPainted(false);
+        btnId.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.PLAIN, 50));
 
         panelDrawRoom.setLayout(new BorderLayout()); //BorderLayout으로 배치관리자 설정
         panelDrawRoom.setVisible(false); // 비활성화
@@ -328,16 +338,14 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
     private void batch() {
         panelMain.add(btnStart);
+        panelMain.setComponentZOrder(btnStart, 0); // Z-인덱스 최상위로 설정
         panelMain.add(panelId);
         panelMain.add(panelDrawRoom);
-        btnStart.setIcon(icGameStart);
 
         panelId.add(panelSub);
         panelSub.add(labelUserId);
         panelSub.add(textFieldUserIdInput);
         panelId.add(btnId);
-        btnId.setIcon(icGameStart);
-
 
         //메인 게임 패널에 붙이는 부분
         panelDrawRoom.add(panelBasePanel,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경  //??????????
@@ -393,6 +401,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         textFieldChatInput.addActionListener(e -> sendChatMessage());
 
         btnStart.addActionListener(e -> {
+            panelMain.removeStartPanelDesign();
             panelId.setVisible(true);
             panelSub.setVisible(true);
             btnStart.setVisible(false);
