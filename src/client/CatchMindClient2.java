@@ -130,8 +130,6 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         // 세로 스크롤바 색상 변경
         JScrollBar verticalScrollBar = scrollPaneChat.getVerticalScrollBar();
         verticalScrollBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
-            private Color decrementButtonColor;
-
             @Override
             protected void configureScrollBarColors() {
                 // 세로 스크롤바의 thumb(스크롤바 조작 부분) 색상
@@ -188,11 +186,13 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
             @Override
             public void mouseEntered(MouseEvent e) {
                 btnStart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+                btnStart.setForeground(new Color(200, 200, 255)); // Hover 시 텍스트 색상 변경
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 btnStart.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+                btnStart.setForeground(Color.WHITE); // 기본 텍스트 색상으로 복원
             }
         });
         // panelId
@@ -228,11 +228,13 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
             @Override
             public void mouseEntered(MouseEvent e) {
                 btnId.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+                btnId.setForeground(new Color(200, 200, 255)); // Hover 시 텍스트 색상 변경
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 btnId.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+                btnId.setForeground(Color.WHITE); // 기본 텍스트 색상으로 복원
             }
         });
 
@@ -373,6 +375,8 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         panelEndGame.add(btnRestart);
         panelEndGame.add(btnEndGame);
         setSize(600,500);
+
+        //initializeBrushHoverEffects(); // 브러쉬 버튼 Hover 효과 초기화
     }
 
     private void batch() {

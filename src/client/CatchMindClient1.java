@@ -130,8 +130,6 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // 세로 스크롤바 색상 변경
         JScrollBar verticalScrollBar = scrollPaneChat.getVerticalScrollBar();
         verticalScrollBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
-            private Color decrementButtonColor;
-
             @Override
             protected void configureScrollBarColors() {
                 // 세로 스크롤바의 thumb(스크롤바 조작 부분) 색상
@@ -377,6 +375,8 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         panelEndGame.add(btnRestart);
         panelEndGame.add(btnEndGame);
         setSize(600,500);
+
+        //initializeBrushHoverEffects(); // 브러쉬 버튼 Hover 효과 초기화
     }
 
     private void batch() {
