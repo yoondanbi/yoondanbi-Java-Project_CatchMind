@@ -38,7 +38,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private TextField textFieldChatInput, textFieldUserIdInput;
     private JScrollPane scrollPaneChat;
 
-    private JLabel labelQuizTitle, labelQuizContent, labelUserId, labelScoreBoard;
+    private JLabel designLabel, labelQuizTitle, labelQuizContent, labelUserId, labelScoreBoard;
     private JButton btnId, btnReady,btnExit, btnEndGame, btnRestart,btnSend;
 
     private Font ftSmall, ftMedium, ftLarge;
@@ -93,7 +93,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         penIconYellow = new ImageIcon("img/yellowPaint.png");
 
         btnStart = new JButton("START");
-        btnId = new JButton("START");
+        btnId = new JButton("NEXT");
         btnSend =new JButton("send");
 
         // Ready 버튼 아이콘 로드 및 고품질 리사이즈
@@ -112,7 +112,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         btnIndigoDrawPen = new PaintButton(penIconIndigo);
         btnPurpleDrawPen = new PaintButton(penIconPurple);
 
-        labelUserId = new JLabel("아이디");
+        ImageIcon designIcon=new ImageIcon("img/catchMindImg.png"); //캐치마인드 로고가 되는 이미지 아이콘
+        designLabel=new JLabel(designIcon);
+        labelUserId = new JLabel("ID : ");
         labelQuizTitle = new JLabel("제시어: ");
         labelQuizContent = new JLabel("변수");
 
@@ -169,41 +171,44 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // panelMain
         setContentPane(panelMain);
         panelMain.setLayout(null);
-        btnStart.setBounds(100, 400, 400, 80); // 시작 버튼 위치 조정
+        btnStart.setBounds(43, 80, 500, 200); // 시작 버튼 위치 조정
         btnStart.setContentAreaFilled(false);
         btnStart.setOpaque(false); // 투명도 활성화
         btnStart.setForeground(Color.WHITE);
         btnStart.setBorderPainted(false);
         btnStart.setFocusPainted(false);
-        btnStart.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 70));
+        btnStart.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 85));
 
         // panelId
         panelId.setLayout(null);
         panelId.setVisible(false); // 비활성화
-        panelId.setBackground(new Color(242, 242, 242));
+        panelId.setBackground(Color.CYAN);
         panelId.setBounds(0,0,600,500); // panelId 위치, 크기 조정 (x, y, width, height) 좌표는 panelMain 기준
 
         panelSub.setLayout(null);
         panelSub.setVisible(false); // 비활성화
-        panelSub.setBorder(new LineBorder(new Color(87, 87, 87), 3, true));
-        panelSub.setBounds(0,0,600,500); // 아이디 입력 필드 중앙 배치
+        panelSub.setBorder(new LineBorder(new Color(42,86,186), 20, true));
+        panelSub.setBackground(new Color(0,138,255));
+        panelSub.setBounds(0,0,587,463); // 아이디 입력 필드 중앙 배치
 
-        labelUserId.setBounds(0, 2, 62, 32); // labelUserId 위치, 크기 조정 (x, y, width, height) 좌표는 panelId 기준
-        labelUserId.setBorder(new LineBorder(new Color(87, 87, 87), 2, true));
-        labelUserId.setFont(ftSmall);
+        labelUserId.setBounds(160, 280, 62, 65); // labelUserId 위치, 크기 조정 (x, y, width, height) 좌표는 panelId 기준
+        labelUserId.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 30));
+        labelUserId.setForeground(Color.WHITE);
         labelUserId.setHorizontalAlignment(JLabel.CENTER); // 글자 가운데 정렬
 
+        textFieldUserIdInput.setBounds(225, 290, 185, 34);
+        textFieldUserIdInput.setBackground(new Color(255, 255, 255, 0));  // 투명 배경 설정
+        textFieldUserIdInput.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.PLAIN, 20));
 
-        textFieldUserIdInput.setBounds(65, 3, 185, 34);
-        textFieldUserIdInput.setBackground(new Color(242, 242, 242, 255));
-        textFieldUserIdInput.setFont(ftMedium);
-
-        btnId.setBounds(300, 300, 200, 80); // 아이디 확인 버튼 위치 조정
-        btnId.setBackground(Color.PINK);
+        btnId.setBounds(100, 370, 400, 80); // 아이디 확인 버튼 위치 조정
+        btnId.setContentAreaFilled(false);
+        btnId.setOpaque(false); // 투명도 활성화
         btnId.setForeground(Color.WHITE);
         btnId.setBorderPainted(false);
         btnId.setFocusPainted(false);
-        btnId.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.PLAIN, 50));
+        btnId.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 70));
+
+        designLabel.setBounds(50, -80, 530,403);
 
         panelDrawRoom.setLayout(new BorderLayout()); //BorderLayout으로 배치관리자 설정
         panelDrawRoom.setVisible(false); // 비활성화
@@ -339,7 +344,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         // 버튼 추가
         panelEndGame.add(btnRestart);
         panelEndGame.add(btnEndGame);
-        setSize(850, 600);
+        setSize(600,500);
     }
 
     private void batch() {
@@ -351,7 +356,9 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
         panelId.add(panelSub);
         panelSub.add(labelUserId);
         panelSub.add(textFieldUserIdInput);
+        panelSub.add(designLabel);
         panelId.add(btnId);
+
 
         //메인 게임 패널에 붙이는 부분
         panelDrawRoom.add(panelBasePanel,BorderLayout.CENTER); //center, 앞을 drawroom으로 변경  //??????????
@@ -412,11 +419,13 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
             panelSub.setVisible(true);
             btnStart.setVisible(false);
             btnId.setVisible(true);
+            panelMain.setComponentZOrder(btnId, 0); // Z-인덱스 최상위로 설정
         });
 
         btnId.addActionListener(e -> {
             initializeConnection();
             sendUserId();
+            panelMain.remove(btnId);
         });
 
         btnExit.addActionListener(e -> {
