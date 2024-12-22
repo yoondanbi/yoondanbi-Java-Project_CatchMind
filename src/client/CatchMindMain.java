@@ -24,7 +24,7 @@ public class CatchMindMain {
             CatchMindClient1.main(null); // 첫 번째 클라이언트 실행
             // 두 번째 클라이언트 실행
             System.out.println("Starting CatchMindClient2...");
-            CatchMindClient2.main(null); // 두 번째 클라이언트 실행
+            //CatchMindClient2.main(null); // 두 번째 클라이언트 실행
         } catch (Exception e) {
             System.err.println("Error in main sequence: " + e.getMessage());
         }

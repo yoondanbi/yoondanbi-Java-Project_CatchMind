@@ -171,7 +171,7 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         // panelMain
         setContentPane(panelMain);
         panelMain.setLayout(null);
-        btnStart.setBounds(43, 80, 500, 200); // 시작 버튼 위치 조정
+        btnStart.setBounds(130, 150, 330, 96);
         btnStart.setContentAreaFilled(false);
         btnStart.setOpaque(false); // 투명도 활성화
         btnStart.setForeground(Color.WHITE);
@@ -179,6 +179,22 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         btnStart.setFocusPainted(false);
         btnStart.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 85));
 
+        // 텍스트 가운데 정렬
+        btnStart.setHorizontalAlignment(SwingConstants.CENTER); // 텍스트 수평 가운데 정렬
+        btnStart.setVerticalAlignment(SwingConstants.CENTER);   // 텍스트 수직 가운데 정렬
+
+        // Hover 시 커서 변경
+        btnStart.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btnStart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btnStart.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+            }
+        });
         // panelId
         panelId.setLayout(null);
         panelId.setVisible(false); // 비활성화
@@ -200,13 +216,25 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
         textFieldUserIdInput.setBackground(new Color(255, 255, 255, 0));  // 투명 배경 설정
         textFieldUserIdInput.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.PLAIN, 20));
 
-        btnId.setBounds(100, 370, 400, 80); // 아이디 확인 버튼 위치 조정
+        btnId.setBounds(190, 370, 220, 95); // 아이디 확인 버튼 위치 조정
         btnId.setContentAreaFilled(false);
         btnId.setOpaque(false); // 투명도 활성화
         btnId.setForeground(Color.WHITE);
         btnId.setBorderPainted(false);
         btnId.setFocusPainted(false);
         btnId.setFont(loadCustomFont("fonts/cuteFont.ttf", Font.BOLD, 70));
+        // Hover 시 커서 변경
+        btnId.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btnId.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btnId.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+            }
+        });
 
         designLabel.setBounds(50, -80, 530,403);
 
@@ -438,17 +466,6 @@ public class CatchMindClient2 extends JFrame implements EndGameHandler{
                 return; // 버튼이 비활성화된 경우 동작하지 않음
             }
             isReady = !isReady; // 준비 상태 토글
-//            btnReady.setFocusPainted(false); // 포커스 효과 제거
-//            if (isReady) {
-//                btnReady.setText("준비 취소"); // 텍스트 변경
-//                btnReady.setBackground(Color.ORANGE); // 초록색으로 변경
-//                btnReady.setForeground(Color.WHITE); // 텍스트 흰색
-//                sendReadyCommand(); // 서버에 준비 상태 전송
-//            } else {
-//                //준비 취소 이미지로 변경 코드 추후 추가
-//                btnReady.setBackground(Color.WHITE); // 기본 배경색으로 변경
-//                sendReadyCommand(); // 서버에 준비 취소 상태 전송
-//            }
             if (isReady) {
                 btnReady.setIcon(ready2Icon); // 준비 완료 이미지로 변경
                 btnReady.setBounds(471,5,60,60);
