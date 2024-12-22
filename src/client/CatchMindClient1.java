@@ -188,11 +188,13 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
             @Override
             public void mouseEntered(MouseEvent e) {
                 btnStart.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+                btnStart.setForeground(new Color(200, 200, 255)); // Hover 시 텍스트 색상 변경
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 btnStart.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+                btnStart.setForeground(Color.WHITE); // 기본 텍스트 색상으로 복원
             }
         });
         // panelId
@@ -228,11 +230,13 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
             @Override
             public void mouseEntered(MouseEvent e) {
                 btnId.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // 마우스 커서를 손 모양으로 변경
+                btnId.setForeground(new Color(200, 200, 255)); // Hover 시 텍스트 색상 변경
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 btnId.setCursor(Cursor.getDefaultCursor()); // 마우스 커서를 기본 모양으로 복원
+                btnId.setForeground(Color.WHITE); // 기본 텍스트 색상으로 복원
             }
         });
 
