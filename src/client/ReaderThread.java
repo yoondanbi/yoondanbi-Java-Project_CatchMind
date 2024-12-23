@@ -78,8 +78,7 @@ class ReaderThread extends Thread {
                 handleColor(parseMessageReader[1]); // COLOR 메시지 처리
                 break;
             case "SERVER":
-                System.out.println("start2 = " + parseMessageReader);
-                textAreaChat.append("[SERVER]: " + parseMessageReader[1] + "\n"); // 서버 메시지 표시
+                textAreaChat.append(parseMessageReader[1] + "\n"); // 서버 메시지 표시
                 break;
             case "CHAT":
                 if (parseMessageReader.length > 1) textAreaChat.append(parseMessageReader[1] + "\n"); // 채팅 메시지 표시

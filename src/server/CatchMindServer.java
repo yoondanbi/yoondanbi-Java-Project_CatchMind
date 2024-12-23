@@ -124,7 +124,7 @@ public class CatchMindServer {
 
         private void processClientID(String[] parsedMessage) {
             clientID = parsedMessage[1];
-            broadcastMessage("SERVER", "[" + clientID + "] has entered the room.");
+            broadcastMessage("SERVER", clientID + " has entered the room");
             assignTurnsAndScores();
         }
 
@@ -157,7 +157,7 @@ public class CatchMindServer {
         private void processChat(String[] parsedMessage) {
             if (parsedMessage.length > 1) {
                 String chatMessage = parsedMessage[1];
-                broadcastMessage("CHAT", "[" + clientID + "]: " + chatMessage);
+                broadcastMessage("CHAT", clientID + ": " + chatMessage);
                 checkAnswer(chatMessage); // 채팅 메시지를 정답 체크 메서드로 전달
             }
         }
@@ -165,14 +165,14 @@ public class CatchMindServer {
         private void checkAnswer(String answer) {
             String currentWord = ProblemManager.getProblem(currentQuizIndex);
             if (isGameActive && answer.equals(currentWord)) {
-                broadcastMessage("SERVER", "[" + clientID + "] guessed the word correctly: [" + currentWord + "]");
+                //broadcastMessage("SERVER", "[" + clientID + "] guessed the word correctly: [" + currentWord + "]");
                 increaseScore();
                 // 모든 클라이언트에게 정답 처리 완료 알림
                 for (ClientHandler client : connectedClients) {
                     client.outputWriter.println("ANSWER&" + currentWord);
                 }
                // playerScore++; // 정답 맞춘 클라이언트의 점수 증가
-                broadcastMessage("SERVER", "[" + clientID + "] 점수: " + playerScore);
+                broadcastMessage("SERVER",  clientID + " [+" + playerScore+"점]");
 
                 assignNextTurnToCorrectAnswerer(this); // 정답자에게 다음 턴 권한
                 moveToNextWord();
@@ -191,7 +191,7 @@ public class CatchMindServer {
                 if (client.clientID.equals(clientID)) {
                     client.playerScore++;
                     sendClientList(); // 점수 변경 후 업데이트
-                    client.outputWriter.println("SERVER&Your current score: " + client.playerScore);
+                    //client.outputWriter.println("SERVER&Your current score: " + client.playerScore);
                     break;
                 }
             }
@@ -214,10 +214,10 @@ public class CatchMindServer {
             isReady = !isReady; // 준비 상태 토글
             if (isReady) {
                 readyPlayerCount++;
-                broadcastMessage("SERVER", "[" + clientID + "] is ready.");
+                broadcastMessage("SERVER", clientID + " is ready.");
             } else {
                 readyPlayerCount--;
-                broadcastMessage("SERVER", "[" + clientID + "] is not ready.");
+                broadcastMessage("SERVER", clientID + " is not ready.");
             }
             System.out.println("readyPlayerCount = " + readyPlayerCount);
             // Ready 상태 확인 후 바로 게임 시작 체크
@@ -246,7 +246,7 @@ public class CatchMindServer {
                     if (client.playerTurnOrder == currentPlayerTurn) { // 현재 턴의 클라이언트 찾기
                         String currentWord = ProblemManager.getProblem(currentQuizIndex);
                         client.outputWriter.println("TURN&" + currentWord); // TURN과 제시어 전송
-                        broadcastMessage("SERVER", "[" + client.clientID + "] is taking their turn.");
+                        broadcastMessage("SERVER", client.clientID + " is turn");
                         //break;
                     }else{
                         client.outputWriter.println("NOTTURN&"); // NOTTURN 전송
@@ -280,7 +280,7 @@ public class CatchMindServer {
         }
 
         private void handleClientExit(String[] parsedMessage) {
-            broadcastMessage("SERVER", "[" + clientID + "] has left the game.");
+            broadcastMessage("SERVER", clientID + " has left the game.");
             if (isReady) {
                 readyPlayerCount--; // 나가기 전에 준비 상태였다면 readyPlayerCount 감소
             }
