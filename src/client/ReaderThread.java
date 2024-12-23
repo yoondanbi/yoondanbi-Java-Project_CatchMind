@@ -160,6 +160,7 @@ class ReaderThread extends Thread {
         isDrawingEnabled = true; // 그림 그리기 활성화
         textFieldChatInput.setEnabled(false); // 채팅 입력 비활성화
         panelBottom.setVisible(true); // 하단 패널 표시
+        handleColor("Delete"); // 그림판 초기화
     }
 
     // 사용자 턴 종료를 처리하는 메서드
@@ -169,6 +170,7 @@ class ReaderThread extends Thread {
         drawingBrush.setDrawingEnabled(false); // 펜 비활성화
         textFieldChatInput.setEnabled(true); // 채팅 입력 활성화
         panelBottom.setVisible(false); // 하단 패널 숨기기
+        handleColor("Delete"); // 그림판 초기화
     }
 
     // 다음 문제를 선택하는 메서드

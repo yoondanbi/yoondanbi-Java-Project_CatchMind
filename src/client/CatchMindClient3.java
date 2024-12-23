@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class CatchMindClient1 extends JFrame implements EndGameHandler{
+public class CatchMindClient3 extends JFrame implements EndGameHandler{
     private static final String LOG_TAG = "GameStart :";
     private String userId;
     private ImageIcon penIconBlack, penIconRed, penIconOrange, penIconYellow,
@@ -51,7 +51,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     private boolean isReady = false; // 버튼 상태를 저장하는 변수 (false: 준비 안 됨, true: 준비됨)
     private ImageIcon ready1Icon, ready2Icon;
 
-    public CatchMindClient1() {
+    public CatchMindClient3() {
         init();
         setting();
         batch();
@@ -794,7 +794,7 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
     }
 
     public static void main(String[] args) {
-        new CatchMindClient1();
+        new CatchMindClient3();
     }
 
     // TTF 폰트를 불러오는 메서드
