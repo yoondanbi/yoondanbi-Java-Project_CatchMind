@@ -41,7 +41,7 @@ public class PaintButton extends JButton {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                setBackground(hoverColor); // 클릭 해제 시 Hover 색상으로 복원
+                setBackground(defaultColor); // 클릭 해제 시 Hover 색상으로 복원
             }
         });
     }

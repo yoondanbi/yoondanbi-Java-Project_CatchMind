@@ -514,6 +514,30 @@ public class CatchMindClient1 extends JFrame implements EndGameHandler{
 
         btnEndGame.addActionListener(e -> System.exit(0)); // 게임 종료 버튼
         btnRestart.addActionListener(e -> resetGameSession());  // 재시작 버튼
+
+        // **추가: JTextArea의 텍스트 변경 이벤트로 스크롤 자동 내리기**
+        textAreaChat.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            @Override
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                scrollToBottom();
+            }
+
+            @Override
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                scrollToBottom();
+            }
+
+            @Override
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                scrollToBottom();
+            }
+
+            private void scrollToBottom() {
+                textAreaChat.setCaretPosition(textAreaChat.getDocument().getLength());
+            }
+        });
+
+
     }
 
     // 게임 종료 화면 표시
