@@ -17,7 +17,7 @@
 <br>
 
 ## 🧑‍🤝‍🧑 맴버구성
- - 설계 및 구현 : [윤단비](https://github.com/yoondanbi) , [안예찬]()
+ - 설계 및 구현 : [윤단비](https://github.com/yoondanbi) , [안예찬](https://github.com/yes6686)
 
 <br>
 
@@ -44,7 +44,7 @@
 
 ### 시연 영상
 <a href="https://youtu.be/7Q98TVJNKnA" target="_blank"> 
-  <img src="https://github.com/user-attachments/assets/6d086dbf-e18c-4eea-9db1-b0782d28d9c0" width="300"> </a> 
+  <img src="https://github.com/user-attachments/assets/6d086dbf-e18c-4eea-9db1-b0782d28d9c0" width="600"> </a> 
 </details>
 
 <br>
