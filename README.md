@@ -44,7 +44,7 @@
 
 ### 시연 영상
 <a href="https://youtu.be/7Q98TVJNKnA" target="_blank"> 
-  <img src="https://github.com/user-attachments/assets/6d086dbf-e18c-4eea-9db1-b0782d28d9c0" width="600"> </a> 
+  <img src="https://github.com/user-attachments/assets/159a8126-c174-4109-8e8f-6395040c484d" width="600"> </a> 
 </details>
 
 <br>
