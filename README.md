@@ -45,6 +45,6 @@
 ### 시연 영상
 <div align="center">
   <a href="https://youtu.be/7Q98TVJNKnA" target="_blank"> 
-    <img src="https://github.com/user-attachments/assets/159a8126-c174-4109-8e8f-6395040c484d" width="600">
+    <img src="https://github.com/user-attachments/assets/e680f004-8601-4459-bece-ec10d2cf71a4" width="600">
   </a>
 </div>
