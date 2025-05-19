@@ -29,15 +29,16 @@
 
 ## 💝 주요 기능
 ### 게임 실행 화면 예시
-#### 테마 1(block1.xml)
-![스크린샷 2024-11-19 162602](https://github.com/user-attachments/assets/4215afb7-d271-4fe0-8993-cb18b86cae88)
+#### 시작 화면
+![Image](https://github.com/user-attachments/assets/dc5b28cc-ff34-48ed-9e45-b235e6ddfc11)
 
-![스크린샷 2024-11-19 162641](https://github.com/user-attachments/assets/df27f74c-e1bf-4d9c-959f-fce9d33162b3)
+![Image](https://github.com/user-attachments/assets/ab2e2a79-25c3-4be0-af8c-abf01778a628)
 
-#### 테마 2(block2.xml)
-![스크린샷 2024-11-19 162725](https://github.com/user-attachments/assets/ac71fe99-a873-4a5c-a19f-099563686553)
+#### 메인 화면
+![Image](https://github.com/user-attachments/assets/e03328a9-0e04-48f4-b2e5-87d6408ed4c9)
 
-![스크린샷 2024-11-19 162757](https://github.com/user-attachments/assets/a3e3fb64-2db2-4d41-bd41-4d680e47b8fb)
+#### 랭킹 화면
+![Image](https://github.com/user-attachments/assets/40a9afac-0454-4c5e-ac37-e39b3e2cecc1)
 
 <br>
 
